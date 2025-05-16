@@ -1,0 +1,40 @@
+export const playlistData = {
+  title: "Choir Playlist",
+  description: "Explore our collection of choral music for various occasions",
+  categories: ["Sacred", "Classical", "Contemporary", "Folk", "Holiday"],
+  songs: [
+    {
+      id: 1,
+      title: "Amazing Grace",
+      composer: "John Newton",
+      arrangement: "Traditional",
+      category: "Sacred",
+      difficulty: "Beginner",
+      sheetMusicUrl: "resources/sheets/amazing_grace.pdf",
+      audioUrl: "resources/audio/amazing_grace.mp3",
+      featured: true
+    },
+    {
+      id: 2,
+      title: "Hallelujah Chorus",
+      composer: "George Frideric Handel",
+      arrangement: "Traditional",
+      category: "Classical",
+      difficulty: "Advanced",
+      sheetMusicUrl: "resources/sheets/hallelujah_chorus.pdf",
+      audioUrl: "resources/audio/hallelujah_chorus.mp3",
+      featured: true
+    },
+    {
+      id: 3,
+      title: "Ave Maria",
+      composer: "Franz Schubert",
+      arrangement: "Modern Choir",
+      category: "Sacred",
+      difficulty: "Intermediate",
+      sheetMusicUrl: "resources/sheets/ave_maria.pdf",
+      audioUrl: "resources/audio/ave_maria.mp3",
+      featured: false
+    }
+  ]
+};
