@@ -248,10 +248,50 @@ I will rejoice for He has made me glad.
       id: "jesus-keep-me-near-the-cross",
       title: "Jesus Keep Me Near The Cross",
       category: ["Hymn"],
-      url: "https://youtu.be/pLtMtaKae-4",
-      author: [],
+      url: "https://youtu.be/BPaAopnX_sg",
+      author: ["Fanny Crosby"],
       key: "",
-      lyrics: "",
+      lyrics: `
+  Verse 1
+Jesus, keep me near the cross,
+There a precious fountain,
+Free to all, a healing stream,
+Flows from Calv’ry’s mountain.
+In the cross, in the cross
+Be my glory ever,
+Till my raptur’d soul shall find
+Rest beyond the river.
+
+Verse 2
+Near the cross, a trembling soul,
+Love and mercy found me;
+There the Bright and Morning Star
+Shed His beams around me.
+In the cross, in the cross
+Be my glory ever,
+Till my raptur’d soul shall find
+Rest beyond the river.
+
+Verse 3
+Near the cross! O Lamb of God,
+Bring its scenes before me;
+Help me walk from day to day
+With its shadow o’er me.
+In the cross, in the cross
+Be my glory ever,
+Till my raptur’d soul shall find
+Rest beyond the river.
+
+Verse 4
+Near the cross! I’ll watch and wait,
+Hoping, trusting ever,
+Till I reach the golden strand,
+Just beyond the river.
+In the cross, in the cross
+Be my glory ever,
+Till my raptur’d soul shall find
+Rest beyond the river.
+`,
     },
   ],
 };
