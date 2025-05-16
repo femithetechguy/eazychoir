@@ -1078,6 +1078,67 @@ body:not(.menu-open) .collapsible-section:not([data-collapsed="false"]) {
   .schedule-card.row-highlighted {
     animation: mobile-card-highlight 2s infinite alternate ease-in-out;
   }
+
+  /* Fix for song video embeds on mobile devices */
+  /* First, fix the modal columns layout issue */
+  .song-modal-columns {
+    flex-direction: column;
+  }
+
+  /* Ensure the song-video-column is properly displayed on mobile */
+  .song-video-column {
+    flex: none;
+    width: 100%;
+    height: auto;
+    min-height: 200px;
+    padding: 15px;
+    display: block;
+  }
+
+  /* Fix video container height on mobile */
+  .video-container {
+    height: auto;
+    margin-bottom: 20px;
+  }
+
+  /* Ensure the video embed has proper dimensions */
+  .song-video-embed {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    overflow: hidden;
+    margin-top: 10px;
+  }
+
+  /* Position the iframe properly within its container */
+  .song-video-embed iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+  }
+
+  /* Fix scrolling issues on mobile */
+  .song-modal-content {
+    overflow-y: auto;
+    max-height: 90vh;
+  }
+
+  /* Ensure lyrics section doesn't push video out of view */
+  .song-lyrics-column {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  /* Make sure the entire modal is properly sized for mobile */
+  .song-modal.visible {
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
 }
 
 /* These styles apply to both mobile and desktop but are safe */
@@ -1362,648 +1423,65 @@ body.modal-open {
     justify-content: center;
     flex-wrap: wrap;
   }
-}
 
-/* Make sure song links are visibly clickable */
-.song-link {
-  cursor: pointer;
-  color: var(--primary-color);
-  font-weight: 500;
-  text-decoration: none;
-  transition: color 0.2s ease, text-decoration 0.2s ease;
-  display: inline-block;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
-
-.song-link:hover {
-  color: var(--primary-color-dark, #3a74d5);
-  text-decoration: underline;
-  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.05);
-}
-
-/* Make video links clickable too */
-.song-video-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #e62117; /* YouTube red */
-  opacity: 0.8;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-.song-video-link:hover {
-  opacity: 1;
-  transform: scale(1.2);
-}
-
-/* Song modal styles - fix visibility issues */
-.song-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  pointer-events: none; /* This prevents clicks when hidden */
-}
-
-.song-modal.visible {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto; /* This enables clicks when visible */
-}
-
-/* Fix modal visibility issues */
-.song-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  pointer-events: none;
-}
-
-.song-modal.visible {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-/* Make sure the modal content is visible */
-.song-modal-content {
-  width: 85vw;
-  height: 85vh;
-  background-color: white;
-  border-radius: 10px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  transform: scale(0.95);
-  transition: transform 0.3s ease;
-}
-
-.song-modal.visible .song-modal-content {
-  transform: scale(1);
-}
-
-.song-modal-close {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-  font-size: 20px;
-  transition: background-color 0.2s ease;
-}
-
-.song-modal-close:hover {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-.song-modal-header {
-  padding: 20px 25px;
-  border-bottom: 1px solid #eee;
-}
-
-.song-modal-header h2 {
-  margin: 0 0 10px 0;
-  color: var(--primary-color);
-  font-size: 1.8rem;
-  padding-right: 40px; /* Make room for close button */
-}
-
-.song-details-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  color: #555;
-  font-size: 0.95rem;
-}
-
-.song-content-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.song-modal-columns {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-.song-lyrics-column,
-.song-video-column {
-  flex: 1;
-  overflow: auto;
-  padding: 20px;
-}
-
-.song-lyrics-column {
-  border-right: 1px solid #eee;
-}
-
-.lyrics-container,
-.video-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.lyrics-container h3,
-.video-container h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: var(--secondary-color);
-}
-
-.song-lyrics {
-  flex: 1;
-  overflow: auto;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  font-size: 1rem;
-}
-
-.song-lyrics p {
-  margin-bottom: 20px;
-}
-
-.song-video-embed {
-  position: relative;
-  width: 100%;
-  height: 0;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.song-video-embed iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-}
-
-.song-modal-footer {
-  padding: 15px 25px;
-  border-top: 1px solid #eee;
-  background-color: #f9f9f9;
-}
-
-.song-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.song-action-btn {
-  background-color: #f0f0f0;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 15px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  font-size: 0.9rem;
-}
-
-.song-action-btn:hover {
-  background-color: #e0e0e0;
-}
-
-.song-action-btn ion-icon {
-  font-size: 1.2rem;
-}
-
-/* Chord sheet styles */
-.chord-sheet {
-  font-family: monospace;
-  white-space: pre;
-  overflow-x: auto;
-  background-color: #f9f9f9;
-  padding: 15px;
-  border-radius: 5px;
-  line-height: 1.5;
-}
-
-/* Chords toggle */
-.show-chords .chords-section {
-  display: block;
-}
-
-.chords-section {
-  margin-bottom: 20px;
-}
-
-/* Display a message if no lyrics/chords are available */
-.no-lyrics {
-  color: #888;
-  font-style: italic;
-}
-
-/* Prevent body scrolling when modal is open */
-body.modal-open {
-  overflow: hidden;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .song-modal-content {
-    width: 95vw;
-    height: 90vh;
-  }
-
-  .song-modal_columns {
+  /* Fix for song video embeds on mobile devices */
+  /* First, fix the modal columns layout issue */
+  .song-modal-columns {
     flex-direction: column;
   }
 
-  .song-lyrics-column,
+  /* Ensure the song-video-column is properly displayed on mobile */
   .song-video-column {
     flex: none;
     width: 100%;
+    height: auto;
+    min-height: 200px;
     padding: 15px;
+    display: block;
   }
 
-  .song-lyrics-column {
-    border-right: none;
-    border-bottom: 1px solid #eee;
+  /* Fix video container height on mobile */
+  .video-container {
+    height: auto;
+    margin-bottom: 20px;
   }
 
+  /* Ensure the video embed has proper dimensions */
   .song-video-embed {
-    padding-bottom: 56.25%; /* Maintain aspect ratio */
-  }
-
-  .song-modal-header h2 {
-    font-size: 1.5rem;
-  }
-
-  .song-details-meta {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .song-modal-footer {
-    padding: 10px 15px;
-  }
-
-  .song-actions {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-}
-
-/* Make sure song links are visibly clickable */
-.song-link {
-  cursor: pointer;
-  color: var(--primary-color);
-  font-weight: 500;
-  text-decoration: none;
-  transition: color 0.2s ease, text-decoration 0.2s ease;
-  display: inline-block;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
-
-.song-link:hover {
-  color: var(--primary-color-dark, #3a74d5);
-  text-decoration: underline;
-  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.05);
-}
-
-/* Make video links clickable too */
-.song-video-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #e62117; /* YouTube red */
-  opacity: 0.8;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-.song-video-link:hover {
-  opacity: 1;
-  transform: scale(1.2);
-}
-
-/* Song modal styles - fix visibility issues */
-.song-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  pointer-events: none; /* This prevents clicks when hidden */
-}
-
-.song-modal.visible {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto; /* This enables clicks when visible */
-}
-
-/* Fix modal visibility issues */
-.song-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  pointer-events: none;
-}
-
-.song-modal.visible {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-/* Make sure the modal content is visible */
-.song-modal-content {
-  width: 85vw;
-  height: 85vh;
-  background-color: white;
-  border-radius: 10px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  transform: scale(0.95);
-  transition: transform 0.3s ease;
-}
-
-.song-modal.visible .song-modal-content {
-  transform: scale(1);
-}
-
-.song-modal-close {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-  font-size: 20px;
-  transition: background-color 0.2s ease;
-}
-
-.song-modal-close:hover {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-.song-modal-header {
-  padding: 20px 25px;
-  border-bottom: 1px solid #eee;
-}
-
-.song-modal-header h2 {
-  margin: 0 0 10px 0;
-  color: var(--primary-color);
-  font-size: 1.8rem;
-  padding-right: 40px; /* Make room for close button */
-}
-
-.song-details-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  color: #555;
-  font-size: 0.95rem;
-}
-
-.song-content-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.song-modal-columns {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-.song-lyrics-column,
-.song-video-column {
-  flex: 1;
-  overflow: auto;
-  padding: 20px;
-}
-
-.song-lyrics-column {
-  border-right: 1px solid #eee;
-}
-
-.lyrics-container,
-.video-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.lyrics-container h3,
-.video-container h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: var(--secondary-color);
-}
-
-.song-lyrics {
-  flex: 1;
-  overflow: auto;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  font-size: 1rem;
-}
-
-.song-lyrics p {
-  margin-bottom: 20px;
-}
-
-.song-video-embed {
-  position: relative;
-  width: 100%;
-  height: 0;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.song-video-embed iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-}
-
-.song-modal-footer {
-  padding: 15px 25px;
-  border-top: 1px solid #eee;
-  background-color: #f9f9f9;
-}
-
-.song-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.song-action-btn {
-  background-color: #f0f0f0;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 15px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  font-size: 0.9rem;
-}
-
-.song-action-btn:hover {
-  background-color: #e0e0e0;
-}
-
-.song-action-btn ion-icon {
-  font-size: 1.2rem;
-}
-
-/* Chord sheet styles */
-.chord-sheet {
-  font-family: monospace;
-  white-space: pre;
-  overflow-x: auto;
-  background-color: #f9f9f9;
-  padding: 15px;
-  border-radius: 5px;
-  line-height: 1.5;
-}
-
-/* Chords toggle */
-.show-chords .chords-section {
-  display: block;
-}
-
-.chords-section {
-  margin-bottom: 20px;
-}
-
-/* Display a message if no lyrics/chords are available */
-.no-lyrics {
-  color: #888;
-  font-style: italic;
-}
-
-/* Prevent body scrolling when modal is open */
-body.modal-open {
-  overflow: hidden;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .song-modal-content {
-    width: 95vw;
-    height: 90vh;
-  }
-
-  .song-modal_columns {
-    flex-direction: column;
-  }
-
-  .song-lyrics-column,
-  .song-video-column {
-    flex: none;
+    position: relative;
     width: 100%;
-    padding: 15px;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    overflow: hidden;
+    margin-top: 10px;
   }
 
+  /* Position the iframe properly within its container */
+  .song-video-embed iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+  }
+
+  /* Fix scrolling issues on mobile */
+  .song-modal-content {
+    overflow-y: auto;
+    max-height: 90vh;
+  }
+
+  /* Ensure lyrics section doesn't push video out of view */
   .song-lyrics-column {
-    border-right: none;
-    border-bottom: 1px solid #eee;
+    max-height: 300px;
+    overflow-y: auto;
   }
 
-  .song-video-embed {
-    padding-bottom: 56.25%; /* Maintain aspect ratio */
-  }
-
-  .song-modal-header h2 {
-    font-size: 1.5rem;
-  }
-
-  .song-details-meta {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .song-modal-footer {
-    padding: 10px 15px;
-  }
-
-  .song-actions {
+  /* Make sure the entire modal is properly sized for mobile */
+  .song-modal.visible {
+    align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
+    overflow: hidden;
   }
 }

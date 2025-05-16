@@ -600,6 +600,9 @@ export default class ScheduleSection {
       document.body.appendChild(modal);
     }
 
+    // Detect if we're on mobile
+    const isMobile = window.innerWidth <= 768;
+
     // Set the modal content with song details and embedded video
     modal.innerHTML = `
       <div class="song-modal-content">
@@ -625,6 +628,23 @@ export default class ScheduleSection {
         </div>
         
         <div class="song-content-container">
+          ${isMobile && song.url ? `
+          <!-- Video first on mobile -->
+          <div class="song-video-column">
+            <div class="video-container">
+              <h3>Video</h3>
+              <div class="song-video-embed">
+                <iframe 
+                  src="${this.formatVideoUrl(song.url)}" 
+                  frameborder="0" 
+                  allowfullscreen
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                </iframe>
+              </div>
+            </div>
+          </div>` : ''}
+          
           <div class="song-modal-columns">
             <div class="song-lyrics-column">
               <div class="lyrics-container">
@@ -635,9 +655,8 @@ export default class ScheduleSection {
               </div>
             </div>
             
-            ${
-              song.url
-                ? `
+            ${!isMobile && song.url ? `
+            <!-- Video on desktop only in this spot -->
             <div class="song-video-column">
               <div class="video-container">
                 <h3>Video</h3>
@@ -645,14 +664,13 @@ export default class ScheduleSection {
                   <iframe 
                     src="${this.formatVideoUrl(song.url)}" 
                     frameborder="0" 
-                    allowfullscreen 
+                    allowfullscreen
+                    loading="lazy"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
                   </iframe>
                 </div>
               </div>
-            </div>`
-                : ""
-            }
+            </div>` : ''}
           </div>
           
           <div class="song-modal-footer">
@@ -677,6 +695,30 @@ export default class ScheduleSection {
       </div>
     `;
 
+    // Add event listeners and show the modal
+    this.setupModalEventListeners(modal, song);
+
+    // Show the modal
+    document.body.classList.add("modal-open");
+    setTimeout(() => {
+      modal.classList.add("visible");
+
+      // Special fix for mobile iframe loading
+      if (isMobile && song.url) {
+        const iframe = modal.querySelector(".song-video-embed iframe");
+        if (iframe) {
+          // Force iframe to reload by briefly changing src
+          const originalSrc = iframe.src;
+          setTimeout(() => {
+            iframe.src = originalSrc;
+          }, 100);
+        }
+      }
+    }, 10);
+  }
+
+  // Helper method to set up modal event listeners
+  setupModalEventListeners(modal, song) {
     // Add event listener to close button
     const closeBtn = modal.querySelector(".song-modal-close");
     if (closeBtn) {
@@ -723,14 +765,6 @@ export default class ScheduleSection {
         }
       });
     }
-
-    // Show the modal
-    document.body.classList.add("modal-open");
-    setTimeout(() => {
-      modal.classList.add("visible");
-    }, 10);
-
-    console.log("Modal should now be visible");
   }
 
   // Helper method to find song by ID
