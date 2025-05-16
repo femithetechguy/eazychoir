@@ -666,6 +666,7 @@ export default class ScheduleSection {
       "#ffb703": "Yellow",
       "#8a4efc": "Purple",
       "#ffd700": "Gold",
+      "#111111": "TBD",
     };
 
     return colorMap[standardHex] || "Unknown";
@@ -1146,30 +1147,51 @@ export default class ScheduleSection {
     return match && match[2].length === 11 ? match[2] : "";
   }
 
+  // Update your copySongLyrics method in scheduleSection.js
   copySongLyrics(lyrics) {
     if (!lyrics) {
       alert("No lyrics available to copy.");
       return;
     }
 
+    // Get the copy button to show feedback
+    const copyButton = document.querySelector(".song-copy-btn");
+
     // Try to use the navigator.clipboard API first (modern browsers)
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard
         .writeText(lyrics)
         .then(() => {
-          alert("Lyrics copied to clipboard!");
+          this.showCopySuccess(copyButton);
         })
         .catch((err) => {
           console.error("Clipboard API failed:", err);
-          this.fallbackCopyToClipboard(lyrics);
+          this.fallbackCopyToClipboard(lyrics, copyButton);
         });
     } else {
       // Fallback for older browsers
-      this.fallbackCopyToClipboard(lyrics);
+      this.fallbackCopyToClipboard(lyrics, copyButton);
     }
   }
 
-  fallbackCopyToClipboard(text) {
+  // Add this method for better visual feedback
+  showCopySuccess(button) {
+    if (!button) return;
+
+    // Change button text and icon
+    const originalText = button.innerHTML;
+    button.innerHTML = '<ion-icon name="checkmark-outline"></ion-icon>Copied!';
+    button.classList.add("copied");
+
+    // Reset after 2 seconds
+    setTimeout(() => {
+      button.innerHTML = originalText;
+      button.classList.remove("copied");
+    }, 2000);
+  }
+
+  // Update fallbackCopyToClipboard to also show visual feedback
+  fallbackCopyToClipboard(text, button) {
     // Create a temporary textarea to copy from
     const textarea = document.createElement("textarea");
     textarea.value = text;
@@ -1181,12 +1203,11 @@ export default class ScheduleSection {
     try {
       // Execute copy command
       const successful = document.execCommand("copy");
-      console.log(successful ? "Lyrics copied to clipboard!" : "Copy failed");
-      alert(
-        successful
-          ? "Lyrics copied to clipboard!"
-          : "Could not copy lyrics. Please try again."
-      );
+      if (successful) {
+        this.showCopySuccess(button);
+      } else {
+        alert("Could not copy lyrics. Please try again.");
+      }
     } catch (err) {
       console.error("Failed to copy lyrics:", err);
       alert("Could not copy lyrics. Please try again.");
@@ -1194,5 +1215,128 @@ export default class ScheduleSection {
 
     // Clean up
     document.body.removeChild(textarea);
+  }
+
+  // Helper to setup the song links after schedule is rendered
+  updateSectionContent(container) {
+    // First update the section container
+    const section = document.getElementById(this.sectionId);
+    if (section) {
+      section.innerHTML = "";
+      section.appendChild(container);
+
+      // Initialize song links after content is in the DOM
+      console.log("Section content updated, initializing interactive elements");
+      this.initSongLinks();
+
+      // Add this line to specifically initialize share buttons
+      setTimeout(() => {
+        this.initShareButtons();
+      }, 100);
+    }
+  }
+
+  // Update your initShareButtons method with better error handling and cleanup
+  initShareButtons() {
+    console.log("Initializing share buttons specifically...");
+
+    // Get all share buttons that are currently in the DOM
+    const shareButtons = document.querySelectorAll(".share-btn");
+    console.log(`Found ${shareButtons.length} share buttons to initialize`);
+
+    // Store references to the bound event handlers for later cleanup
+    if (!this.buttonHandlers) {
+      this.buttonHandlers = new WeakMap();
+    }
+
+    // Add direct click listeners to each button (more reliable on mobile)
+    shareButtons.forEach((btn) => {
+      // Create bound handler function
+      const handler = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Safety check - if button is no longer in DOM, exit
+        if (!document.body.contains(btn)) {
+          console.warn("Button no longer in DOM, aborting share action");
+          return;
+        }
+
+        console.log("Share button clicked directly");
+
+        // Get the schedule ID from the closest row or card
+        const row = btn.closest("tr");
+        const card = btn.closest(".schedule-card");
+        const scheduleId = row
+          ? row.getAttribute("data-schedule-id")
+          : card
+          ? card.getAttribute("data-schedule-id")
+          : null;
+
+        if (!scheduleId) {
+          console.error("Could not find schedule ID for share button");
+          return;
+        }
+
+        // Generate shareable URL
+        const shareUrl = `${window.location.origin}${window.location.pathname}?schedule=${scheduleId}`;
+        console.log(`Sharing URL: ${shareUrl}`);
+
+        // For mobile, try direct clipboard API first (most reliable)
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard
+            .writeText(shareUrl)
+            .then(() => {
+              // Another safety check before updating UI
+              if (document.body.contains(btn)) {
+                this.showShareSuccess(btn);
+              }
+            })
+            .catch((err) => {
+              console.error("Clipboard API failed:", err);
+              // Try Web Share API next
+              this.tryWebShare(shareUrl, btn);
+            });
+        } else {
+          // Try Web Share API or fallback
+          this.tryWebShare(shareUrl, btn);
+        }
+      };
+
+      // Remove any existing listeners to prevent duplicates
+      const oldHandler = this.buttonHandlers.get(btn);
+      if (oldHandler) {
+        btn.removeEventListener("click", oldHandler);
+      }
+
+      // Add new listener and store reference
+      btn.addEventListener("click", handler);
+      this.buttonHandlers.set(btn, handler);
+    });
+
+    console.log("Share buttons initialized with direct listeners");
+  }
+
+  // Helper method to try the Web Share API
+  tryWebShare(url, button) {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: "Choir Schedule",
+          text: "Check out this choir schedule!",
+          url: url,
+        })
+        .then(() => {
+          console.log("Successfully shared");
+          this.showShareSuccess(button);
+        })
+        .catch((error) => {
+          console.log("Web Share API error:", error);
+          this.legacyCopyToClipboard(url, button);
+        });
+    } else {
+      // Use legacy method as last resort
+      this.legacyCopyToClipboard(url, button);
+    }
   }
 }
