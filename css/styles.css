@@ -1114,3 +1114,56 @@ body:not(.menu-open) .collapsible-section:not([data-collapsed="false"]) {
     display: block;
   }
 }
+
+/* Mobile search container */
+.mobile-search-container {
+  display: flex;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.mobile-search-container input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px 0 0 4px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.mobile-search-container input:focus {
+  border-color: var(--primary-color);
+}
+
+.mobile-search-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  padding: 0 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.mobile-search-button:hover {
+  background-color: var(--primary-color-dark, #3a74d5);
+}
+
+.mobile-search-button ion-icon {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 480px) {
+  .mobile-search-container {
+    padding: 12px;
+  }
+  
+  .mobile-search-container input {
+    padding: 8px 10px;
+  }
+}
