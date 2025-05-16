@@ -1,87 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EazyChoir SPA</title>
-  <link rel="stylesheet" href="css/styles.css" />
-  <script type="module" src="js/app.js" defer></script>
-  <script type="module" src="https://unpkg.com/ionicons@7.2.1/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@7.2.1/dist/ionicons/ionicons.js"></script>
-</head>
-<body>
-  <header class="header">
-    <div class="logo-wrapper">
-      <div class="logo">
-        <ion-icon name="musical-notes-outline"></ion-icon>
-        <span id="site-title">EazyChoir</span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EazyChoir</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <script type="module" src="js/app.js" defer></script>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.2.1/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.2.1/dist/ionicons/ionicons.js"
+    ></script>
+  </head>
+  <body>
+    <!-- Mobile toggle button - fixed position -->
+    <button
+      class="mobile-menu-toggle"
+      id="fixed-mobile-toggle"
+      aria-label="Open menu"
+      aria-expanded="false"
+    >
+      <ion-icon name="menu-outline"></ion-icon>
+    </button>
+
+    <header class="header">
+      <div class="logo-wrapper">
+        <div class="logo">
+          <ion-icon name="musical-notes-outline"></ion-icon>
+          <span id="site-title">EazyChoir</span>
+        </div>
+        <!-- Logo trigger button for mobile -->
+        <button
+          class="mobile-menu-toggle"
+          id="logo-trigger"
+          aria-label="Open menu"
+          aria-expanded="false"
+        >
+          <ion-icon name="menu-outline"></ion-icon>
+        </button>
       </div>
-      <button class="mobile-menu-toggle" id="logo-trigger" aria-label="Toggle menu">
-        <ion-icon name="menu-outline"></ion-icon>
-      </button>
-    </div>
-    <nav class="main-nav" id="main-nav">
-      <button class="menu-close" id="menu-close" aria-label="Close menu">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-      <div class="nav-links">
-        <button class="nav-btn active" data-section="home"><ion-icon name="home-outline"></ion-icon> HOME</button>
-        <button class="nav-btn" data-section="schedule"><ion-icon name="calendar-outline"></ion-icon> SCHEDULE</button>
-        <button class="nav-btn" data-section="playlist"><ion-icon name="musical-notes-outline"></ion-icon> PLAYLIST</button>
-        <button class="nav-btn" data-section="request"><ion-icon name="chatbubble-ellipses-outline"></ion-icon> REQUEST</button>
-        <button class="nav-btn" data-section="blog"><ion-icon name="book-outline"></ion-icon> BLOG</button>
+
+      <!-- Desktop navigation -->
+      <nav class="main-nav" id="main-nav">
+        <div class="nav-links">
+          <button class="nav-btn active" data-section="home">
+            <ion-icon name="home-outline"></ion-icon> HOME
+          </button>
+          <button class="nav-btn" data-section="schedule">
+            <ion-icon name="calendar-outline"></ion-icon> SCHEDULE
+          </button>
+          <button class="nav-btn" data-section="playlist">
+            <ion-icon name="musical-notes-outline"></ion-icon> PLAYLIST
+          </button>
+          <button class="nav-btn" data-section="request">
+            <ion-icon name="chatbubble-ellipses-outline"></ion-icon> REQUEST
+          </button>
+          <button class="nav-btn" data-section="blog">
+            <ion-icon name="book-outline"></ion-icon> BLOG
+          </button>
+        </div>
+      </nav>
+
+      <!-- Search for desktop -->
+      <div class="search-container">
+        <input type="text" id="song-search" placeholder="Search EazyChoir" />
+        <ion-icon name="search-outline" id="search-icon"></ion-icon>
       </div>
-    </nav>
-    <div class="search-container">
-      <input type="text" id="song-search" placeholder="Search songs..." />
-      <ion-icon name="search-outline" id="search-icon"></ion-icon>
+    </header>
+
+    <!-- Mobile menu - separate from desktop navigation -->
+    <div class="mobile-nav-menu">
+      <div class="mobile-menu-overlay">
+        <div class="mobile-menu-panel">
+          <div class="mobile-menu-header">
+            <h3>Menu</h3>
+            <button class="mobile-menu-close" aria-label="Close menu">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+          </div>
+
+          <!-- Mobile search box -->
+          <div class="mobile-search-container">
+            <input
+              type="text"
+              id="mobile-song-search"
+              placeholder="Search EazyChoir"
+            />
+            <button class="mobile-search-button" aria-label="Search">
+              <ion-icon name="search-outline"></ion-icon>
+            </button>
+          </div>
+
+          <!-- Mobile navigation links -->
+          <nav class="mobile-nav-links">
+            <a class="nav-link" data-section="home">HOME</a>
+            <a class="nav-link" data-section="schedule">SCHEDULE</a>
+            <a class="nav-link" data-section="playlist">PLAYLIST</a>
+            <a class="nav-link" data-section="request">REQUEST</a>
+            <a class="nav-link" data-section="blog">BLOG</a>
+          </nav>
+        </div>
+      </div>
     </div>
-  </header>
-  <main>
+
     <!-- Empty section containers - content will be populated from JS -->
-    <section id="home-section" class="collapsible-section" data-collapsed="false">
-      <!-- Home content will be rendered by HomeSection.js -->
-    </section>
-    
-    <section id="schedule-section" class="collapsible-section" data-collapsed="true">
-      <!-- Schedule content will be rendered by ScheduleSection.js -->
-    </section>
-    
-    <section id="playlist-section" class="collapsible-section" data-collapsed="true">
-      <!-- Playlist content will be rendered by PlaylistSection.js -->
-    </section>
-    
-    <section id="request-section" class="collapsible-section" data-collapsed="true">
-      <!-- Request content will be rendered by RequestSection.js -->
-    </section>
-    
-    <section id="blog-section" class="collapsible-section" data-collapsed="true">
-      <!-- Blog content will be rendered by BlogSection.js -->
-    </section>
-  </main>
-  <footer class="footer">
-    <span id="footer-main">
-      <ion-icon name="shield-checkmark-outline"></ion-icon>
-      2025 EAZY CHOIR - All Rights Reserved.
-    </span>
-    <span id="footer-sub">
-      Crafted with love <ion-icon name="heart-outline"></ion-icon> by 
-      <a href="#" id="fttg-link" style="color: #fff; text-decoration: underline;">Fttg Solutions</a>
-    </span>
-  </footer>
+    <main>
+      <section
+        id="home-section"
+        class="collapsible-section"
+        data-collapsed="false"
+      >
+        <!-- Home content will be rendered by HomeSection.js -->
+      </section>
 
-  <!-- Modal for FTTG Solutions embed -->
-  <div id="fttg-modal" class="fttg-modal">
-    <div class="fttg-modal-content">
-      <button class="fttg-modal-close" id="fttg-modal-close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-      <iframe id="fttg-iframe" frameborder="0" allowfullscreen></iframe>
+      <section
+        id="schedule-section"
+        class="collapsible-section"
+        data-collapsed="true"
+      >
+        <!-- Schedule content will be rendered by ScheduleSection.js -->
+      </section>
+
+      <section
+        id="playlist-section"
+        class="collapsible-section"
+        data-collapsed="true"
+      >
+        <!-- Playlist content will be rendered by PlaylistSection.js -->
+      </section>
+
+      <section
+        id="request-section"
+        class="collapsible-section"
+        data-collapsed="true"
+      >
+        <!-- Request content will be rendered by RequestSection.js -->
+      </section>
+
+      <section
+        id="blog-section"
+        class="collapsible-section"
+        data-collapsed="true"
+      >
+        <!-- Blog content will be rendered by BlogSection.js -->
+      </section>
+    </main>
+    <footer class="footer">
+      <span id="footer-main">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        2025 EAZY CHOIR - All Rights Reserved.
+      </span>
+      <span id="footer-sub">
+        Crafted with love <ion-icon name="heart-outline"></ion-icon> by
+        <a
+          href="#"
+          id="fttg-link"
+          style="color: #fff; text-decoration: underline"
+          >Fttg Solutions</a
+        >
+      </span>
+    </footer>
+
+    <!-- Modal for FTTG Solutions embed -->
+    <div id="fttg-modal" class="fttg-modal">
+      <div class="fttg-modal-content">
+        <button
+          class="fttg-modal-close"
+          id="fttg-modal-close"
+          aria-label="Close"
+        >
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        <iframe id="fttg-iframe" frameborder="0" allowfullscreen></iframe>
+      </div>
     </div>
-  </div>
 
-  <button id="back-to-top" class="back-to-top" aria-label="Back to top">
-    <ion-icon name="arrow-up-outline"></ion-icon>
-  </button>
-</body>
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top">
+      <ion-icon name="arrow-up-outline"></ion-icon>
+    </button>
+  </body>
 </html>

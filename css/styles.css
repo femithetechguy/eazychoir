@@ -19,7 +19,7 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: var(--text-color);
   background-color: #fff;
   min-height: 100vh;
@@ -55,6 +55,13 @@ body {
   font-size: 1.5rem;
   color: var(--primary-color);
   cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.logo:hover {
+  background-color: rgba(74, 136, 249, 0.1);
 }
 
 .logo ion-icon {
@@ -63,17 +70,40 @@ body {
 }
 
 .mobile-menu-toggle {
-  display: none;
-  background: none;
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 999;
+  background-color: var(--primary-color);
+  color: white;
   border: none;
-  font-size: 1.8rem;
-  color: var(--primary-color);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: none; /* Hide by default */
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  margin-left: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-toggle:hover {
+  transform: scale(1.05);
+  background-color: var(--primary-color-dark, #3a74d5);
+}
+
+.mobile-menu-toggle ion-icon {
+  font-size: 1.6rem;
+}
+
+.header .mobile-menu-toggle {
+  display: none;
 }
 
 .main-nav {
   display: flex;
+  align-items: center;
 }
 
 .nav-links {
@@ -96,7 +126,8 @@ body {
   margin-right: 5px;
 }
 
-.nav-btn:hover, .nav-btn.active {
+.nav-btn:hover,
+.nav-btn.active {
   color: var(--primary-color);
 }
 
@@ -145,16 +176,27 @@ body {
 main {
   flex: 1;
   margin-top: var(--header-height);
-  padding-bottom: var(--footer-height);
   width: 100%;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .collapsible-section {
   padding: 20px;
   width: 100%;
+  display: none; /* Hidden by default */
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  flex: 1;
+}
+
+.collapsible-section[data-collapsed="false"] {
+  display: flex !important; /* Override any other display properties */
+  flex-direction: column;
+}
+
+/* Section visibility control */
+.collapsible-section {
   display: none;
 }
 
@@ -162,10 +204,44 @@ main {
   display: block;
 }
 
+/* Ensure only one section is visible at a time */
+body:not(.menu-open) .collapsible-section:not([data-collapsed="false"]) {
+  display: none !important;
+}
+
 .section-container {
   width: 100%;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-fill {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Remove conflicting styles */
+.collapsible-section {
+  visibility: visible !important; /* Ensure visibility */
+}
+
+/* Fix animation issues */
+.back-to-top {
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s !important;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+}
+
+/* Ensure correct section visibility */
+.collapsible-section[data-collapsed="true"] {
+  display: none !important;
 }
 
 .section-header {
@@ -191,7 +267,8 @@ main {
   overflow: hidden;
 }
 
-.section-divider:before, .section-divider:after {
+.section-divider:before,
+.section-divider:after {
   content: "";
   flex: 1;
   border-bottom: 1px solid #eaeaea;
@@ -474,502 +551,1468 @@ main {
   border: none;
 }
 
-/* Mobile specific styles */
-@media (max-width: 768px) {
-  .header {
-    padding: 0 15px;
-  }
-  
-  .mobile-menu-toggle {
-    display: block;
-  }
-  
-  .main-nav {
-    position: fixed;
-    top: 0;
-    left: -100%;
-    width: 80%;
-    height: 100vh;
-    background-color: var(--primary-color);
-    flex-direction: column;
-    padding-top: 60px;
-    transition: left 0.3s ease;
-    z-index: 101;
-    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
-  }
-  
-  .main-nav.show-nav {
-    left: 0;
-  }
-  
-  .menu-close {
-    display: block;
-  }
-  
-  .nav-links {
-    flex-direction: column;
-    width: 100%;
-  }
-  
-  .nav-btn {
-    color: white;
-    font-size: 1.1rem;
-    padding: 15px 20px;
-    width: 100%;
-    text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .nav-btn:hover, .nav-btn.active {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-  }
-  
-  #song-search {
-    width: 150px;
-  }
-  
-  #song-search:focus {
-    width: 170px;
-  }
-  
-  .welcome-banner h1 {
-    font-size: 1.8rem;
-  }
-  
-  .subtitle {
-    font-size: 1rem;
-  }
-  
-  .section-header h1 {
-    font-size: 1.8rem;
-  }
-  
-  .song-cards {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  }
-  
-  .preview-section h2 {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .view-all-link {
-    margin-left: 0;
-    margin-top: 10px;
-  }
-  
-  .preview-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .date-badge {
-    margin-bottom: 10px;
-    margin-right: 0;
-  }
-  
-  .fttg-modal-content {
-    width: 70%; /* Maintain 70% width on mobile */
-    height: 70vh; /* Maintain 70% height on mobile */
-  }
+/* Schedule Table Styles */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin: 20px 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
 }
 
-/* For very small screens */
-@media (max-width: 480px) {
-  .logo span {
-    font-size: 1.2rem;
-  }
-  
-  .search-container {
-    display: none; /* Hide search on very small screens */
-  }
-  
-  .welcome-banner h1 {
-    font-size: 1.5rem;
-  }
-  
-  .welcome-banner {
-    padding: 30px 10px;
-  }
-  
-  .section-container {
-    padding: 0 10px;
-  }
-  
-  .song-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .fttg-modal-content {
-    width: 85%; /* Slightly wider on very small screens for better usability */
-    height: 70vh; /* Maintain 70% height */
-  }
+.schedule-table {
+  width: 100%;
+  table-layout: fixed; /* Keep column widths stable */
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.95rem;
 }
 
-/* Debug outline to verify section boundaries */
-main > section {
-  outline: 1px solid rgba(79,70,229,0.1);
-  background-color: #fafafa;
+.schedule-table thead {
+  background-color: var(--primary-color);
+  color: white;
 }
 
-/* Make sure all text content in sections is visible */
-.section-container, 
-.section-container * {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  color: #333 !important; /* Ensure text has visible color */
+.schedule-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap; /* Prevent header text wrapping */
 }
 
-.welcome-banner h1,
-.welcome-banner p,
-.home-content p,
-.schedule-preview h2,
-.playlist-preview h2,
-.request-preview h2,
-.blog-preview h2,
-.preview-item h3,
-.preview-item p,
-.song-card h3 {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  color: #333 !important; /* Dark color for visibility */
-  text-shadow: 0 0 1px rgba(0,0,0,0.1); /* Add subtle text shadow for readability */
+.schedule-table tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
 }
 
-/* Make headings stand out */
-h1, h2, h3 {
-  color: #4f46e5 !important; /* Use the primary color for headers */
-  margin-bottom: 0.8em !important;
-  font-weight: 700 !important;
+.schedule-table tbody tr:hover {
+  background-color: rgba(74, 136, 249, 0.05);
 }
 
-/* Add padding and background to text containers for visibility */
-.home-content, 
-.schedule-preview, 
-.playlist-preview, 
-.request-preview, 
-.blog-preview {
-  padding: 20px !important;
-  background-color: #fff !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
-  margin-bottom: 20px !important;
+.schedule-table td {
+  padding: 15px;
+  vertical-align: middle;
+  word-break: break-word; /* Ensure long words break */
+  max-width: 250px; /* Limit maximum width */
 }
 
-/* Debug outlines to see content boundaries */
-.section-container > div {
-  border: 1px dashed rgba(79,70,229,0.3) !important;
-  padding: 15px !important;
-  margin: 10px 0 !important;
+/* Enhanced row highlighting styles */
+.row-highlighted {
+  position: relative;
+  z-index: 10;
+  animation: pulse-highlight 2s infinite alternate ease-in-out;
+  box-shadow: 0 0 20px rgba(var(--primary-color-rgb, 74, 136, 249), 0.4);
+  transition: all 0.3s ease;
+  border-collapse: separate; /* Ensure borders don't collapse */
+  transform: scale(1.01); /* Smaller scale to prevent overflow */
+  transform-origin: center; /* Scale from center */
+}
+
+.row-highlighted td {
+  background-color: rgba(
+    var(--primary-color-rgb, 74, 136, 249),
+    0.12
+  ) !important;
+  position: relative;
+  overflow: visible;
+  max-width: inherit; /* Maintain maximum width */
+  white-space: normal; /* Allow text wrapping */
+  word-break: break-word; /* Break words if needed */
+}
+
+/* Add a subtle glow effect around the border */
+.row-highlighted::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid var(--primary-color);
+  pointer-events: none;
+  border-radius: 4px;
+  box-shadow: 0 0 15px rgba(var(--primary-color-rgb, 74, 136, 249), 0.5);
+  animation: border-pulse 2s infinite alternate ease-in-out;
+  z-index: -1; /* Place behind content */
 }
 
 /* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px);}
-  to { opacity: 1; transform: translateY(0);}
-}
-@keyframes bounceIn {
-  0% { transform: scale(0.7);}
-  60% { transform: scale(1.1);}
-  100% { transform: scale(1);}
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1;}
-  50% { opacity: 0.6;}
-}
-@keyframes heartBeat {
-  0%, 100% { transform: scale(1);}
-  20% { transform: scale(1.2);}
-  40% { transform: scale(0.95);}
-  60% { transform: scale(1.1);}
-
-}  80% { transform: scale(0.98);}
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .header, main {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+@keyframes pulse-highlight {
+  0% {
+    box-shadow: 0 0 8px rgba(var(--primary-color-rgb, 74, 136, 249), 0.3);
   }
-  #song-search {
-    width: 90px;
-  }
-  #song-search:focus {
-    width: 140px;
-  }
-  .song-item {
-    padding: 0.8em 0.7em;
-    font-size: 0.98em;
+  100% {
+    box-shadow: 0 0 25px rgba(var(--primary-color-rgb, 74, 136, 249), 0.6);
   }
 }
 
-/* Modal styles for FTTG Solutions embed */
-.fttg-modal {
-  display: none;
+@keyframes border-pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(var(--primary-color-rgb, 74, 136, 249), 0.3);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba(var(--primary-color-rgb, 74, 136, 249), 0.7);
+  }
+}
+
+/* Add a left-right slide in animation when first highlighted */
+@keyframes slide-in-highlight {
+  0% {
+    transform: translateX(-10px); /* Reduced movement */
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Apply this animation when first highlighted */
+.row-highlighted.animate-in {
+  animation: slide-in-highlight 0.4s ease-out forwards,
+    pulse-highlight 2s infinite alternate ease-in-out 0.4s;
+  transform: scale(1.01); /* Apply scale after animation */
+}
+
+/* Ensure the content stays properly aligned */
+.date-cell {
+  position: relative;
+  min-width: 120px;
+  padding-right: 10px !important; /* Reduced padding */
+  display: flex;
+  align-items: center;
+}
+
+/* Make date text wrap properly if needed */
+.clickable-date {
+  flex: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  overflow: visible; /* Allow text to be fully visible */
+  white-space: normal; /* Allow wrapping */
+  word-break: break-word;
+  margin-right: 30px; /* Make space for share icon */
+}
+
+/* Move share icon to a better position */
+.share-actions {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5; /* Ensure it's above other elements */
+}
+
+/* Make share button more compact */
+.share-btn {
+  background: none;
+  border: none;
+  color: var(--secondary-color);
+  padding: 4px; /* Smaller padding */
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
+  position: relative;
+  font-size: 0.9rem; /* Slightly smaller icon */
+}
+
+/* Fix menu and navigation issues */
+
+/* Header layout */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  background-color: #fff;
+  height: var(--header-height);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+/* Desktop navigation */
+.main-nav {
+  display: flex;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  cursor: pointer;
+  transition: color var(--transition-speed);
+}
+
+.nav-btn ion-icon {
+  margin-right: 5px;
+}
+
+.nav-btn:hover,
+.nav-btn.active {
+  color: var(--primary-color);
+}
+
+/* Mobile menu toggle button - hidden on desktop */
+#fixed-mobile-toggle,
+#logo-trigger {
+  display: none; /* Hide by default on desktop */
+}
+
+/* Mobile menu styles */
+.mobile-nav-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 990;
+  visibility: hidden;
+  pointer-events: none;
+  display: none; /* Hidden by default */
+}
+
+.mobile-menu-overlay {
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.7);
-  z-index: 1000;
-  justify-content: center;
-  align-items: center;
-}
-.fttg-modal.open {
-  display: flex;
-  animation: fadeIn 0.3s;
-}
-.fttg-modal-content {
-  background-color: #fff;
-  width: 70%;
-  height: 70%;
-  border-radius: 10px;
-  position: relative;
-  overflow: hidden;
-  animation: fadeInUp 0.4s;
-}
-.fttg-modal-content iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-.fttg-modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: white;
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  font-size: 1.5rem;
-  cursor: pointer;
-  z-index: 1001;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-/* Ripple animation */
-@keyframes ripple {
-  0% {
-    transform: scale(0, 0);
-    opacity: 0.5;
+.mobile-menu-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.mobile-menu-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 85%;
+  max-width: 320px;
+  height: 100%;
+  background-color: white;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-menu-overlay.active .mobile-menu-panel {
+  transform: translateX(0);
+}
+
+/* Ensure mobile menu is properly hidden when inactive */
+.mobile-menu-overlay:not(.active) {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.mobile-menu-header h3 {
+  margin: 0;
+  color: var(--primary-color);
+  font-size: 1.2rem;
+}
+
+.mobile-menu-close {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.mobile-nav-links .nav-link {
+  padding: 15px 20px;
+  color: var(--secondary-color);
+  text-decoration: none;
+  font-size: 1rem;
+  border-left: 4px solid transparent;
+  transition: background-color 0.2s ease, border-left-color 0.2s ease;
+}
+
+.mobile-nav-links .nav-link:hover,
+.mobile-nav-links .nav-link.active {
+  background-color: rgba(74, 136, 249, 0.1);
+  border-left-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  /* Hide desktop navigation */
+  .main-nav {
+    display: none;
   }
-  100% {
-    transform: scale(20, 20);
+
+  /* Hide desktop search */
+  .search-container {
+    display: none;
+  }
+
+  /* Show mobile menu structure */
+  .mobile-nav-menu {
+    display: block;
+  }
+
+  /* Show mobile toggle buttons */
+  #fixed-mobile-toggle {
+    display: flex;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 999;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  #logo-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+
+  /* Prevent scrolling when menu is open */
+  body.menu-open {
+    overflow: hidden;
+  }
+
+  /* Enhanced mobile schedule card styles without affecting desktop */
+  /* Container for schedule cards */
+  .schedule-cards-container {
+    padding: 10px;
+    margin-top: 10px;
+  }
+
+  /* Individual schedule cards */
+  .schedule-card {
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* Card header improvements */
+  .card-header {
+    position: relative;
+    padding: 12px 15px;
+  }
+
+  /* Fix date text display */
+  .date-text {
+    white-space: normal;
+    word-break: break-word;
+    font-size: 0.95rem;
+    padding-right: 40px; /* Make room for share icon */
+    margin-bottom: 4px;
+  }
+
+  /* Ensure minister name is visible */
+  .minister-name {
+    white-space: normal;
+    word-break: break-word;
+    padding-right: 40px;
+  }
+
+  /* Properly position share button */
+  .schedule-card .share-actions {
+    position: absolute;
+    right: 45px; /* Positioned before toggle button */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+  }
+
+  /* Make share button more compact for mobile */
+  .schedule-card .share-btn {
+    padding: 4px;
+    font-size: 0.9rem;
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.08);
+  }
+
+  /* Share button success state */
+  .schedule-card .share-btn.copied {
+    color: white;
+    background-color: var(--primary-color);
+  }
+
+  /* Adjust toggle button positioning */
+  .schedule-card .toggle-button {
+    width: 34px;
+    height: 34px;
+    padding: 4px;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* Card content grid for better mobile layout */
+  .schedule-card .card-content-grid {
+    grid-template-columns: 1fr; /* Single column on mobile */
+    gap: 10px;
+    padding: 12px;
+  }
+
+  /* Song category boxes */
+  .schedule-card .song-category {
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    padding: 10px;
+  }
+
+  /* Category headings */
+  .schedule-card .song-category h4 {
+    margin: 0 0 6px 0;
+    font-size: 0.85rem;
+  }
+
+  /* Song items in mobile view */
+  .schedule-card .song-item {
+    margin-bottom: 3px;
+    font-size: 0.9rem;
+  }
+
+  /* Ensure song links don't overflow */
+  .schedule-card .song-link {
+    display: inline-block;
+    max-width: calc(100% - 30px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Fix for color swatch display */
+  .schedule-card .color-swatches {
+    margin-bottom: 5px;
+  }
+
+  /* Reduce size of color names text */
+  .schedule-card .color-names {
+    font-size: 0.85rem;
+  }
+
+  /* Add shadow when expanded */
+  .schedule-card:not(.card-content.collapsed) {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Improved highlight styles specific to mobile cards */
+  .schedule-card.row-highlighted {
+    transform: scale(1); /* No scale to prevent overflow */
+    box-shadow: 0 0 15px rgba(var(--primary-color-rgb, 74, 136, 249), 0.5);
+    border-left-width: 8px !important;
+  }
+
+  /* Highlight card header with light background */
+  .schedule-card.row-highlighted .card-header {
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
+  }
+
+  /* Animation should not disturb surrounding elements */
+  @keyframes mobile-card-highlight {
+    0% {
+      box-shadow: 0 0 8px rgba(var(--primary-color-rgb, 74, 136, 249), 0.3);
+    }
+    100% {
+      box-shadow: 0 0 15px rgba(var(--primary-color-rgb, 74, 136, 249), 0.5);
+    }
+  }
+
+  /* Apply mobile-specific animation */
+  .schedule-card.row-highlighted {
+    animation: mobile-card-highlight 2s infinite alternate ease-in-out;
+  }
+
+  /* Fix for song video embeds on mobile devices */
+  /* First, fix the modal columns layout issue */
+  .song-modal_columns {
+    flex-direction: column;
+  }
+
+  /* Ensure the song-video-column is properly displayed on mobile */
+  .song-video-column {
+    flex: none;
+    width: 100%;
+    height: auto;
+    min-height: 200px;
+    padding: 15px;
+    display: block;
+  }
+
+  /* Fix video container height on mobile */
+  .video-container {
+    height: auto;
+    margin-bottom: 20px;
+  }
+
+  /* Ensure the video embed has proper dimensions */
+  .song-video-embed {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    overflow: hidden;
+    margin-top: 10px;
+  }
+
+  /* Position the iframe properly within its container */
+  .song-video-embed iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+  }
+
+  /* Fix scrolling issues on mobile */
+  .song-modal-content {
+    overflow-y: auto;
+    max-height: 90vh;
+  }
+
+  /* Ensure lyrics section doesn't push video out of view */
+  .song-lyrics-column {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  /* Make sure the entire modal is properly sized for mobile */
+  .song-modal.visible {
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Improved Mobile Video Embedding */
+  /* Fix inconsistent class name causing video display issues */
+  .song-modal_columns {
+    flex-direction: column;
+  }
+
+  /* Fix height and sizing of video container on mobile */
+  .song-video-column {
+    min-height: 225px;
+    margin-bottom: 10px;
+  }
+
+  /* Ensure modal isn't cut off on small screens */
+  .song-modal-content {
+    max-height: 92vh;
+    width: 92vw;
+  }
+
+  /* Improve scrolling of lyrics on mobile */
+  .song-lyrics-column {
+    max-height: 40vh;
+    overflow-y: auto;
+  }
+
+  /* Make action buttons more tappable on mobile */
+  .song-action-btn {
+    padding: 10px 18px;
+    margin: 5px;
+  }
+}
+
+/* Enhanced Mobile Experience Styles */
+@media (max-width: 768px) {
+  /* Improved card animations */
+  .schedule-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-left 0.3s ease;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .schedule-card:active {
+    transform: scale(0.98);
+  }
+
+  /* Highlight animation */
+  .schedule-card.row-highlighted {
+    animation: card-pulse 2s infinite alternate ease-in-out;
+    border-left-width: 8px !important;
+    box-shadow: 0 8px 24px rgba(var(--primary-color-rgb, 74, 136, 249), 0.15);
+  }
+
+  @keyframes card-pulse {
+    0% {
+      box-shadow: 0 8px 20px rgba(var(--primary-color-rgb, 74, 136, 249), 0.15);
+    }
+    100% {
+      box-shadow: 0 12px 28px rgba(var(--primary-color-rgb, 74, 136, 249), 0.35);
+    }
+  }
+
+  /* Card expansion animation */
+  .card-content {
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    max-height: 2000px;
+    opacity: 1;
+    overflow: hidden;
+  }
+
+  .card-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  /* Toggle button animation */
+  .toggle-button ion-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .card-content:not(.collapsed) + .toggle-button ion-icon,
+  .toggle-button ion-icon[name="chevron-up-outline"] {
+    transform: rotate(180deg);
+  }
+
+  /* Enhanced card header */
+  .card-header {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(
+      to right,
+      rgba(var(--primary-color-rgb, 74, 136, 249), 0.03),
+      transparent
+    );
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Badge animations */
+  .date-badge {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    height: 60px;
+    margin-right: 14px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .row-highlighted .date-badge {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(var(--primary-color-rgb, 74, 136, 249), 0.2);
+  }
+
+  .date-month {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+  }
+
+  .date-day {
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: #333;
+  }
+
+  /* Improved song items */
+  .song-item {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.05);
+    border-radius: 8px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .song-item:active {
+    transform: scale(0.98);
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
+  }
+
+  /* Enhance song links */
+  .song-link {
+    flex: 1;
+    display: block;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 4px 0;
+  }
+
+  .song-video-link {
+    color: #e62117; /* YouTube red */
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+  }
+
+  .song-video-link:active {
+    transform: scale(1.2);
+  }
+
+  .song-video-link ion-icon {
+    font-size: 1.4rem;
+  }
+
+  /* Enhanced share button */
+  .share-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .share-btn:active {
+    transform: scale(0.9);
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.2);
+  }
+
+  .share-btn.copied {
+    background-color: var(--primary-color);
+    color: white;
+    animation: pulse 0.5s ease;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.15);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Improved color swatches for mobile */
+  .schedule-card .color-swatches {
+    display: flex;
+    gap: 6px;
+    margin: 8px 0;
+  }
+
+  .schedule-card .color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+  }
+
+  .schedule-card .color-swatch:active {
+    transform: scale(1.2);
+  }
+
+  /* Song modal on mobile */
+  @media (max-width: 768px) {
+    .song-modal-content {
+      width: 92vw;
+      height: 85vh;
+      border-radius: 16px;
+    }
+
+    .song-modal.visible .song-modal-content {
+      animation: modal-slide-up 0.4s ease forwards;
+    }
+
+    @keyframes modal-slide-up {
+      from {
+        transform: translateY(10%) scale(0.95);
+        opacity: 0.5;
+      }
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .song-modal-header {
+      background-image: linear-gradient(
+        to right,
+        rgba(var(--primary-color-rgb, 74, 136, 249), 0.05),
+        transparent
+      );
+    }
+
+    .song-modal-close {
+      width: 42px;
+      height: 42px;
+    }
+
+    .song-video-column {
+      margin-bottom: 20px;
+    }
+
+    .song-lyrics-column {
+      max-height: 40vh;
+      overflow-y: auto;
+      padding-bottom: 20px;
+    }
+
+    .song-action-btn {
+      flex: 1;
+      justify-content: center;
+      padding: 12px;
+      border-radius: 8px;
+    }
+  }
+}
+
+/* Touch-friendly scrolling for mobile */
+@media (max-width: 768px) {
+  .song-lyrics-column,
+  .card-content {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Add pull-to-refresh hint */
+  .schedule-cards-container {
+    position: relative;
+    padding-top: 10px;
+  }
+
+  .schedule-cards-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 4px;
+    background-color: #ddd;
+    border-radius: 4px;
+    opacity: 0.7;
+  }
+}
+
+/* Ripple effect for mobile interactions */
+.ripple-effect {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  pointer-events: none;
+  width: 100px;
+  height: 100px;
+  transform: scale(0);
+  opacity: 1;
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
     opacity: 0;
   }
 }
 
-/* Pulse animation */
-@keyframes pulse {
+/* Add card expand animation */
+@keyframes card-expand {
   0% {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.2);
+    transform: scale(1.02);
   }
   100% {
     transform: scale(1);
   }
 }
 
-/* Back to top button styles */
-.back-to-top {
+/* Enhanced Mobile Toggle Menu Styles */
+/* Add this to your styles.css file */
+
+/* Fixed mobile toggle button enhancements */
+#fixed-mobile-toggle {
   position: fixed;
-  bottom: 20px;
+  bottom: 24px;
   right: 20px;
-  width: 45px;
-  height: 45px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background-color: #4f46e5;
+  background-color: var(--primary-color);
   color: white;
-  border: none;
-  box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
-  opacity: 1;
-  visibility: visible;
-  animation: flicker 2s infinite;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb, 74, 136, 249), 0.3);
+  border: none;
+  cursor: pointer;
+  z-index: 89;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    background-color 0.3s ease, box-shadow 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Add a continuous flicker animation */
-@keyframes flicker {
-  0% {
-    box-shadow: 0 0 5px rgba(79, 70, 229, 0.5);
-    transform: scale(1);
-  }
-  50% {
-    box-shadow: 0 0 15px rgba(79, 70, 229, 0.8);
-    transform: scale(1.1);
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(79, 70, 229, 0.5);
-    transform: scale(1);
-  }
+#fixed-mobile-toggle:active {
+  transform: scale(0.92);
 }
 
-.back-to-top:hover {
-  animation-play-state: paused;
-  transform: translateY(-5px);
-  box-shadow: 0 6px 15px rgba(79, 70, 229, 0.7);
+#fixed-mobile-toggle:hover {
+  background-color: #3a74d5;
+  box-shadow: 0 6px 16px rgba(var(--primary-color-rgb, 74, 136, 249), 0.4);
 }
 
-.back-to-top ion-icon {
-  font-size: 1.5em;
+#fixed-mobile-toggle ion-icon {
+  font-size: 26px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
 }
 
-/* Adjust position for mobile */
-@media (max-width: 700px) {
-  .back-to-top {
-    bottom: 15px;
-    right: 15px;
-    width: 40px;
-    height: 40px;
-  }
+body.menu-open #fixed-mobile-toggle ion-icon {
+  transform: rotate(45deg);
 }
 
-/* Reduce animation complexity for better performance */
-* {
-  /* Disable transitions during page load for better performance */
-  transition: none !important;
-  animation: none !important;
-}
-
-/* Performance optimizations - reduce layout triggers */
-body, .main-nav, .section-container, .collapsible-section {
-  will-change: auto; /* Don't use GPU acceleration unless needed */
-}
-
-/* Disable the flickering animation on back-to-top button */
-.back-to-top {
-  animation: none !important;
-  transition: transform 0.3s ease !important;
-  opacity: 0.9 !important;
-  box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3) !important;
-}
-
-/* Simpler hover effects */
-.back-to-top:hover {
-  transform: translateY(-3px);
-}
-
-/* Ensure sections are visible without JavaScript */
-.collapsible-section {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-/* Modal styles - add this to the end of your CSS file */
-body.modal-open {
-  overflow: hidden; /* Prevent scrolling when modal is open */
-}
-
-.fttg-modal {
+/* Mobile menu overlay improvements */
+.mobile-menu-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0);
+  z-index: 90;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.4s ease, opacity 0.4s ease, backdrop-filter 0.4s ease;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  pointer-events: none;
+}
+
+.mobile-menu-overlay.active {
+  visibility: visible;
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  pointer-events: auto;
+}
+
+/* Mobile menu panel animations */
+.mobile-menu-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 85%;
+  max-width: 360px;
   height: 100%;
+  background-color: white;
+  box-shadow: -2px 0 20px rgba(0, 0, 0, 0.2);
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  display: flex;
+  flex-direction: column;
+  z-index: 91;
+  overflow-y: auto;
+  border-radius: 0 0 0 16px;
+}
+
+.mobile-menu-overlay.active .mobile-menu-panel {
+  transform: translateX(0);
+}
+
+/* Mobile menu header */
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background-image: linear-gradient(
+    to right,
+    rgba(var(--primary-color-rgb, 74, 136, 249), 0.05),
+    transparent
+  );
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.mobile-menu-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+/* Close button animation */
+.mobile-menu-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.mobile-menu-close ion-icon {
+  font-size: 24px;
+  transition: transform 0.3s ease;
+}
+
+.mobile-menu-close:active {
+  transform: scale(0.9);
+  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.2);
+}
+
+.mobile-menu-overlay.active .mobile-menu-close ion-icon {
+  animation: rotateIn 0.4s ease forwards;
+}
+
+@keyframes rotateIn {
+  0% {
+    transform: rotate(-90deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(0);
+    opacity: 1;
+  }
+}
+
+/* Mobile nav links */
+.mobile-nav-links {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobile-nav-links .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-nav-links .nav-link.active {
+  color: var(--primary-color);
+  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.08);
+}
+
+.mobile-nav-links .nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+.mobile-nav-links .nav-link.active::after,
+.mobile-nav-links .nav-link:active::after {
+  width: 30px;
+}
+
+.mobile-nav-links .nav-link:active {
+  transform: scale(0.98);
+  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.12);
+}
+
+.mobile-nav-links .nav-link ion-icon {
+  margin-right: 12px;
+  font-size: 20px;
+  color: var(--primary-color);
+  opacity: 0.85;
+}
+
+.mobile-menu-overlay.active .mobile-nav-links .nav-link {
+  animation: slideInRight 0.5s ease forwards;
+  opacity: 0;
+}
+
+/* Staggered animation for nav links */
+.mobile-menu-overlay.active .mobile-nav-links .nav-link:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.mobile-menu-overlay.active .mobile-nav-links .nav-link:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.mobile-menu-overlay.active .mobile-nav-links .nav-link:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.mobile-menu-overlay.active .mobile-nav-links .nav-link:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.mobile-menu-overlay.active .mobile-nav-links .nav-link:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Mobile search improvements */
+.mobile-search-container {
+  padding: 0 20px 20px;
+}
+
+.mobile-search-box {
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.mobile-search-box:focus-within {
+  background-color: white;
+  border-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.3);
+  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
+}
+
+.mobile-search-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 6px;
+  margin-right: 4px;
+  transition: color 0.3s ease;
+}
+
+.mobile-search-box:focus-within .mobile-search-button {
+  color: var(--primary-color);
+}
+
+#mobile-song-search {
+  flex: 1;
+  border: none;
+  background-color: transparent;
+  outline: none;
+  padding: 8px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.mobile-menu-overlay.active .mobile-search-container {
+  animation: fadeIn 0.5s ease 0.3s forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Add a ripple effect for buttons */
+.ripple {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Improve mobile share button feedback */
+@media (max-width: 768px) {
+  .share-btn {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+    /* Make tappable area larger */
+    position: relative;
+  }
+
+  .share-btn::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+  }
+
+  .share-btn:active {
+    transform: scale(0.9);
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.2);
+  }
+
+  .share-btn.copied {
+    background-color: var(--primary-color);
+    color: white;
+    animation: share-pulse 0.3s ease;
+  }
+
+  @keyframes share-pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+
+/* Add these styles if they're not already in your CSS */
+.song-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  opacity: 0;
   visibility: hidden;
+  opacity: 0;
   transition: opacity 0.3s ease, visibility 0.3s ease;
-  backdrop-filter: blur(5px);
 }
 
-.fttg-modal.visible {
-  opacity: 1;
+.song-modal.visible {
   visibility: visible;
+  opacity: 1;
 }
 
-.fttg-modal-content {
-  position: relative;
-  width: 70%; /* Set to 70% of viewport width */
-  height: 70vh; /* Set to 70% of viewport height */
-  background-color: #fff;
+.song-modal-content {
+  background-color: white;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 80%;
+  max-width: 800px;
+  max-height: 90vh;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
   transform: scale(0.9);
   transition: transform 0.3s ease;
 }
 
-.fttg-modal.visible .fttg-modal-content {
+.song-modal.visible .song-modal-content {
   transform: scale(1);
 }
 
-.fttg-modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
+.song-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.song-modal-title {
+  margin: 0;
+  color: var(--primary-color);
+  font-size: 1.3rem;
+}
+
+.song-modal-close {
+  background: none;
   border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-  font-size: 20px;
+}
+
+.song-modal_columns {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.song-video-column {
+  margin-bottom: 20px;
+}
+
+.song-video-embed {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%;
+  overflow: hidden;
+}
+
+.song-video-embed iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.song-lyrics-column {
+  flex: 1;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.song-details-meta {
+  margin-bottom: 15px;
+}
+
+.song-lyrics pre {
+  white-space: pre-wrap;
+  font-family: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+.song-actions {
+  display: flex;
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
+  gap: 10px;
+}
+
+.song-action-btn {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 5px;
+  text-decoration: none;
+  color: var(--primary-color);
+  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
   transition: background-color 0.2s ease;
 }
 
-.fttg-modal-close:hover {
-  background: rgba(0, 0, 0, 0.8);
+.song-action-btn:hover {
+  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.2);
 }
 
-.fttg-modal-close:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+.song-action-btn ion-icon {
+  margin-right: 8px;
 }
 
-#fttg-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
+.no-lyrics {
+  color: #999;
+  font-style: italic;
 }
 
-/* Mobile-specific modal styles */
+/* For mobile */
 @media (max-width: 768px) {
-  .fttg-modal-content {
-    width: 70%; /* Maintain 70% width on mobile */
-    height: 70vh; /* Maintain 70% height on mobile */
+  .song-modal-content {
+    width: 95%;
+    max-height: 85vh;
   }
-  
-  .fttg-modal-close {
-    top: 5px;
-    right: 5px;
-    width: 32px;
-    height: 32px;
-  }
-}
 
-/* For very small screens */
-@media (max-width: 480px) {
-  .fttg-modal-content {
-    width: 85%; /* Slightly wider on very small screens for better usability */
-    height: 70vh; /* Maintain 70% height */
+  .song-actions {
+    flex-direction: column;
   }
 }
