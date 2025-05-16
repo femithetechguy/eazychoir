@@ -6,6 +6,7 @@ export const songData = {
       category: ["Hymn", "Worship", "Thanksgiving"],
       url: "https://youtu.be/pLtMtaKae-4",
       author: ["Johnson Oatman Jr.", "Edwin O. Excell"],
+      key: "Not Specified",
       lyrics: `
 When upon life's billows you are tempest-tossed,
 When you are discouraged, thinking all is lost,
@@ -46,6 +47,7 @@ Help and comfort give you to your journey's end.
       category: ["Hymn", "Worship", "Praise"],
       url: "https://youtu.be/urI-ZJfUHdM",
       author: ["Stuart K. Hine"],
+      key: "Not Specified",
       lyrics: `
 O Lord my God, when I in awesome wonder
 Consider all the worlds Thy hands have made,

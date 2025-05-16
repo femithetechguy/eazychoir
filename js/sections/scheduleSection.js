@@ -5,6 +5,12 @@ export default class ScheduleSection {
   constructor() {
     this.sectionId = "schedule-section";
     this.data = scheduleData;
+
+    // Make songData directly accessible to this class
+    this.songData = songData;
+
+    // Also make it globally available since your code references window.songData
+    window.songData = songData;
   }
 
   async loadData() {
@@ -12,7 +18,7 @@ export default class ScheduleSection {
     return this.data;
   }
 
-  // Update the render method to accept search options
+  // Update the render method to properly bind song click events
   render(options = {}) {
     const section = document.getElementById(this.sectionId);
     if (!section) return;
@@ -53,7 +59,8 @@ export default class ScheduleSection {
         this.renderDesktopView(container, sortedSchedules, searchTerm);
       }
 
-      section.appendChild(container);
+      // Update the section content and initialize song links
+      this.updateSectionContent(container);
 
       // Check for URL parameter to highlight specific schedule
       setTimeout(() => {
@@ -63,19 +70,70 @@ export default class ScheduleSection {
         if (scheduleId) {
           this.highlightSchedule(scheduleId, isMobile);
         }
-      }, 500);
+      }, 300);
     });
+  }
 
-    // Initialize song link click handlers
+  // Add this new method to handle song link initialization
+  initSongLinks() {
+    console.log("Initializing song links...");
+
+    // Use a slight delay to ensure all links are in the DOM
     setTimeout(() => {
       const songLinks = document.querySelectorAll(".song-link");
+      console.log(`Found ${songLinks.length} song links`);
+
+      if (songLinks.length === 0) {
+        console.warn("No song links found. DOM might not be ready yet.");
+      }
+
       songLinks.forEach((link) => {
-        link.addEventListener("click", (e) => {
+        // Remove existing listeners to prevent duplicates
+        const newLink = link.cloneNode(true);
+        link.parentNode.replaceChild(newLink, link);
+
+        // Add new listener
+        newLink.addEventListener("click", (e) => {
           e.preventDefault();
-          const songId = link.getAttribute("data-song-id");
-          this.showSongDetails(songId);
+          e.stopPropagation(); // Prevent parent elements from catching the click
+
+          const songId = newLink.getAttribute("data-song-id");
+          const songTitle = newLink.getAttribute("data-song-title");
+
+          console.log(`Song link clicked: ${songTitle} (ID: ${songId})`);
+
+          // Call a method to show song details in a modal
+          this.showSongDetailsModal(songId, songTitle);
         });
       });
+
+      // Handle video icons separately
+      const videoLinks = document.querySelectorAll(".song-video-link");
+      videoLinks.forEach((link) => {
+        // Remove existing listeners
+        const newVideoLink = link.cloneNode(true);
+        link.parentNode.replaceChild(newVideoLink, link);
+
+        // Add new listener
+        newVideoLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          // Get the song ID from the parent song-item's song-link
+          const songLink = newVideoLink
+            .closest(".song-item")
+            .querySelector(".song-link");
+          if (songLink) {
+            const songId = songLink.getAttribute("data-song-id");
+            const songTitle = songLink.getAttribute("data-song-title");
+
+            console.log(`Video link clicked for: ${songTitle}`);
+            this.showSongDetailsModal(songId, songTitle);
+          }
+        });
+      });
+
+      console.log("Song links initialization complete");
     }, 500);
   }
 
@@ -199,22 +257,23 @@ export default class ScheduleSection {
         }
 
         // Add click event to share button for direct copying
-        const shareBtn = row.querySelector('.share-btn');
+        const shareBtn = row.querySelector(".share-btn");
         if (shareBtn) {
-          shareBtn.addEventListener('click', (e) => {
+          shareBtn.addEventListener("click", (e) => {
             e.stopPropagation(); // Prevent row highlight when clicking share
-            
+
             // Create the shareable link
             const shareUrl = `${window.location.origin}${window.location.pathname}?schedule=${scheduleId}`;
-            
+
             // Use the Clipboard API if available
             if (navigator.clipboard) {
-              navigator.clipboard.writeText(shareUrl)
+              navigator.clipboard
+                .writeText(shareUrl)
                 .then(() => {
                   this.showCopiedFeedback(shareBtn);
                 })
-                .catch(err => {
-                  console.error('Could not copy text: ', err);
+                .catch((err) => {
+                  console.error("Could not copy text: ", err);
                   this.fallbackCopy(shareUrl, shareBtn);
                 });
             } else {
@@ -522,63 +581,323 @@ export default class ScheduleSection {
   }
 
   // Add this method to your ScheduleSection class
-  showSongDetails(songId) {
-    const song = songData.songs.find((s) => s.id === songId);
-    if (!song) return;
+  showSongDetailsModal(songId, songTitle) {
+    console.log(`Showing modal for song: ${songTitle} (ID: ${songId})`);
 
-    // Check if modal already exists, or create it
-    let modal = document.querySelector(".song-details-modal");
+    // Find the song in the song data
+    const song = this.findSongById(songId);
+    if (!song) {
+      console.error(`Song with ID ${songId} not found`);
+      return;
+    }
+
+    // Create modal if it doesn't exist
+    let modal = document.getElementById("song-details-modal");
     if (!modal) {
       modal = document.createElement("div");
-      modal.className = "song-details-modal";
+      modal.id = "song-details-modal";
+      modal.className = "song-modal";
       document.body.appendChild(modal);
     }
 
-    // Create modal content
+    // Set the modal content with song details and embedded video
     modal.innerHTML = `
-      <div class="song-details-content">
-        <button class="song-details-close" aria-label="Close details">
+      <div class="song-modal-content">
+        <button class="song-modal-close" aria-label="Close">
           <ion-icon name="close-outline"></ion-icon>
         </button>
-        <h2 class="song-details-title">${song.title}</h2>
-        <div class="song-details-category">
-          ${song.category
-            .map((cat) => `<span class="song-category-tag">${cat}</span>`)
-            .join("")}
+        
+        <div class="song-modal-header">
+          <h2>${song.title}</h2>
+          <div class="song-details-meta">
+            <div class="song-authors">
+              <strong>By:</strong> ${
+                song.author ? song.author.join(", ") : "Unknown"
+              }
+            </div>
+            <div class="song-key">
+              <strong>Key:</strong> ${song.key || "Not specified"}
+            </div>
+            <div class="song-category">
+              <strong>Category:</strong> ${song.category || "General"}
+            </div>
+          </div>
         </div>
-        <p class="song-details-author">By ${song.author.join(", ")}</p>
-        <div class="song-details-lyrics">${song.lyrics}</div>
-        <div class="song-action-buttons">
-          ${
-            song.url
-              ? `<a href="${song.url}" class="song-action-button watch-video-button" target="_blank">
-              <ion-icon name="logo-youtube"></ion-icon> Watch Video
-             </a>`
-              : ""
-          }
+        
+        <div class="song-content-container">
+          <div class="song-modal-columns">
+            <div class="song-lyrics-column">
+              <div class="lyrics-container">
+                <h3>Lyrics</h3>
+                <div class="song-lyrics">
+                  ${this.formatLyrics(song.lyrics)}
+                </div>
+              </div>
+            </div>
+            
+            ${
+              song.url
+                ? `
+            <div class="song-video-column">
+              <div class="video-container">
+                <h3>Video</h3>
+                <div class="song-video-embed">
+                  <iframe 
+                    src="${this.formatVideoUrl(song.url)}" 
+                    frameborder="0" 
+                    allowfullscreen 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                  </iframe>
+                </div>
+              </div>
+            </div>`
+                : ""
+            }
+          </div>
+          
+          <div class="song-modal-footer">
+            <div class="song-actions">
+              <button class="song-action-btn print-btn">
+                <ion-icon name="print-outline"></ion-icon> Print
+              </button>
+              <button class="song-action-btn share-btn">
+                <ion-icon name="share-social-outline"></ion-icon> Share
+              </button>
+              ${
+                song.chords
+                  ? `
+              <button class="song-action-btn chords-btn">
+                <ion-icon name="musical-notes-outline"></ion-icon> Show Chords
+              </button>`
+                  : ""
+              }
+            </div>
+          </div>
         </div>
       </div>
     `;
 
-    // Show modal
-    modal.classList.add("visible");
-
-    // Add close functionality
-    const closeBtn = modal.querySelector(".song-details-close");
-    closeBtn.addEventListener("click", () => {
-      modal.classList.remove("visible");
-    });
-
-    // Close when clicking outside content
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) {
+    // Add event listener to close button
+    const closeBtn = modal.querySelector(".song-modal-close");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
         modal.classList.remove("visible");
-      }
-    });
+        setTimeout(() => {
+          document.body.classList.remove("modal-open");
+        }, 300);
+      });
+    }
+
+    // Add event listeners to buttons
+    const printBtn = modal.querySelector(".print-btn");
+    if (printBtn) {
+      printBtn.addEventListener("click", () => {
+        this.printSongLyrics(song);
+      });
+    }
+
+    const shareBtn = modal.querySelector(".share-btn");
+    if (shareBtn) {
+      shareBtn.addEventListener("click", () => {
+        this.shareSong(song);
+      });
+    }
+
+    const chordsBtn = modal.querySelector(".chords-btn");
+    if (chordsBtn && song.chords) {
+      chordsBtn.addEventListener("click", () => {
+        const lyricsContainer = modal.querySelector(".song-lyrics");
+        lyricsContainer.classList.toggle("show-chords");
+
+        if (lyricsContainer.classList.contains("show-chords")) {
+          chordsBtn.innerHTML =
+            '<ion-icon name="musical-notes-outline"></ion-icon> Hide Chords';
+          lyricsContainer.innerHTML = this.formatLyricsWithChords(
+            song.lyrics,
+            song.chords
+          );
+        } else {
+          chordsBtn.innerHTML =
+            '<ion-icon name="musical-notes-outline"></ion-icon> Show Chords';
+          lyricsContainer.innerHTML = this.formatLyrics(song.lyrics);
+        }
+      });
+    }
+
+    // Show the modal
+    document.body.classList.add("modal-open");
+    setTimeout(() => {
+      modal.classList.add("visible");
+    }, 10);
+
+    console.log("Modal should now be visible");
   }
 
-  // Fix the formatSongList method which is missing in your current implementation
+  // Helper method to find song by ID
+  findSongById(id) {
+    // First try window.songData
+    if (window.songData && window.songData.songs) {
+      const song = window.songData.songs.find((song) => song.id === id);
+      if (song) return song;
+    }
 
+    // Fall back to the local reference if window.songData fails
+    if (this.songData && this.songData.songs) {
+      return this.songData.songs.find((song) => song.id === id);
+    }
+
+    console.error(
+      `Song with ID ${id} not found. Song data might not be loaded correctly.`
+    );
+    console.log("Available song data:", this.songData);
+    return null;
+  }
+
+  // Similarly update findSongByTitle
+  findSongByTitle(title) {
+    // First try window.songData
+    if (window.songData && window.songData.songs) {
+      const song = window.songData.songs.find(
+        (song) => song.title.toLowerCase() === title.toLowerCase()
+      );
+      if (song) return song;
+    }
+
+    // Fall back to the local reference if window.songData fails
+    if (this.songData && this.songData.songs) {
+      return this.songData.songs.find(
+        (song) => song.title.toLowerCase() === title.toLowerCase()
+      );
+    }
+
+    return null;
+  }
+
+  // Helper method to format lyrics
+  formatLyrics(lyrics) {
+    if (!lyrics) return '<p class="no-lyrics">No lyrics available</p>';
+
+    // Basic formatting: split into paragraphs and add line breaks
+    return lyrics
+      .split("\n\n")
+      .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
+      .join("");
+  }
+
+  // Helper method to format lyrics with chords
+  formatLyricsWithChords(lyrics, chords) {
+    if (!lyrics || !chords) return this.formatLyrics(lyrics);
+
+    // This is a simplified version - you'd need to implement a proper chord parser
+    // For now, we'll just add chords above the lyrics
+    return `
+      <div class="chords-section">
+        <h4>Chords</h4>
+        <pre class="chord-sheet">${chords}</pre>
+      </div>
+      <div class="lyrics-section">
+        <h4>Lyrics</h4>
+        ${this.formatLyrics(lyrics)}
+      </div>
+    `;
+  }
+
+  // Helper method to format video URL for embedding
+  formatVideoUrl(url) {
+    // Handle YouTube URLs
+    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+      // Extract video ID
+      let videoId = "";
+
+      if (url.includes("v=")) {
+        videoId = url.split("v=")[1];
+        const ampersandPosition = videoId.indexOf("&");
+        if (ampersandPosition !== -1) {
+          videoId = videoId.substring(0, ampersandPosition);
+        }
+      } else if (url.includes("youtu.be/")) {
+        videoId = url.split("youtu.be/")[1];
+      }
+
+      return `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=1&rel=0&enable_js=1`;
+    }
+
+    // Handle Vimeo URLs
+    if (url.includes("vimeo.com")) {
+      const vimeoId = url.split("/").pop();
+      return `https://player.vimeo.com/video/${vimeoId}`;
+    }
+
+    // Default: return the original URL
+    return url;
+  }
+
+  // Helper method to print song lyrics
+  printSongLyrics(song) {
+    const printWindow = window.open("", "_blank");
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>${song.title} - Lyrics</title>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+            h1 { color: #4a88f9; margin-bottom: 5px; }
+            .authors { color: #555; margin-bottom: 20px; }
+            .lyrics { white-space: pre-wrap; }
+            .footer { margin-top: 30px; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 10px; }
+          </style>
+        </head>
+        <body>
+          <h1>${song.title}</h1>
+          <div class="authors">By: ${song.author.join(", ")}</div>
+          <div class="lyrics">${song.lyrics || "No lyrics available"}</div>
+          <div class="footer">Printed from EazyChoir</div>
+          <script>
+            window.onload = function() { window.print(); }
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  }
+
+  // Helper method to share song
+  shareSong(song) {
+    // Create a sharable link to the song
+    const songLink = `${window.location.origin}${window.location.pathname}?song=${song.id}`;
+
+    // Check if Web Share API is available
+    if (navigator.share) {
+      navigator
+        .share({
+          title: `${song.title} - EazyChoir`,
+          text: `Check out "${song.title}" by ${song.author.join(", ")}`,
+          url: songLink,
+        })
+        .catch((err) => {
+          console.error("Share failed:", err);
+          this.fallbackShare(songLink);
+        });
+    } else {
+      this.fallbackShare(songLink);
+    }
+  }
+
+  // Fallback sharing method
+  fallbackShare(link) {
+    // Create a temporary input to copy the link
+    const input = document.createElement("input");
+    input.value = link;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    document.body.removeChild(input);
+
+    // Show a notification that the link was copied
+    alert("Link copied to clipboard!");
+  }
+
+  // Add the missing formatSongList method
   formatSongList(songs) {
     if (!songs || songs.length === 0) {
       return '<span class="no-songs">None</span>';
@@ -590,17 +909,21 @@ export default class ScheduleSection {
         const songDetails = this.findSongByTitle(songTitle);
 
         if (songDetails) {
-          // Create a link with song details
+          // Create a link with song details - ensure data attributes are correct
           return `<div class="song-item">
           <a href="#" class="song-link" 
              data-song-id="${songDetails.id}" 
-             data-song-title="${songDetails.title}"
-             title="${songDetails.author.join(", ")}">
+             data-song-title="${songDetails.title.replace(/"/g, "&quot;")}"
+             title="${
+               songDetails.author
+                 ? songDetails.author.join(", ").replace(/"/g, "&quot;")
+                 : ""
+             }">
              ${songTitle}
           </a>
           ${
             songDetails.url
-              ? `<a href="${songDetails.url}" class="song-video-link" target="_blank" title="Watch video">
+              ? `<a href="#" class="song-video-link" title="Watch video">
                <ion-icon name="play-circle-outline"></ion-icon>
              </a>`
               : ""
@@ -612,16 +935,6 @@ export default class ScheduleSection {
         }
       })
       .join("");
-  }
-
-  // Add the missing findSongByTitle helper method
-  findSongByTitle(title) {
-    if (!songData || !songData.songs) return null;
-
-    // Case-insensitive search
-    return songData.songs.find(
-      (song) => song.title.toLowerCase() === title.toLowerCase()
-    );
   }
 
   // Add the missing createColorSwatchesHTML method
@@ -664,7 +977,7 @@ export default class ScheduleSection {
       // Add any other colors you use
     };
 
-    return colorMap[hex] || "Unknown";
+    return colorMap[hex.toLowerCase()] || "Unknown";
   }
 
   // Add the missing getColorNamesString method
@@ -682,53 +995,69 @@ export default class ScheduleSection {
     return colorNames[0];
   }
 
+  // Add the missing showCopiedFeedback method
   showCopiedFeedback(button) {
     // Add copied class for styling
-    button.classList.add('copied');
-    
+    button.classList.add("copied");
+
     // Change icon to checkmark
-    const icon = button.querySelector('ion-icon');
+    const icon = button.querySelector("ion-icon");
     if (icon) {
-      icon.setAttribute('name', 'checkmark-outline');
+      icon.setAttribute("name", "checkmark-outline");
     }
-    
+
     // Reset after 2 seconds
     setTimeout(() => {
-      button.classList.remove('copied');
+      button.classList.remove("copied");
       if (icon) {
-        icon.setAttribute('name', 'share-social-outline');
+        icon.setAttribute("name", "share-social-outline");
       }
     }, 2000);
   }
 
+  // Add the missing fallbackCopy method
   fallbackCopy(text, button) {
     // Create a temporary textarea element
-    const textArea = document.createElement('textarea');
+    const textArea = document.createElement("textarea");
     textArea.value = text;
-    
+
     // Make it invisible but still on the page
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-999999px';
-    textArea.style.top = '-999999px';
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
     document.body.appendChild(textArea);
-    
+
     // Select and copy
     textArea.focus();
     textArea.select();
-    
+
     let successful = false;
     try {
-      successful = document.execCommand('copy');
+      successful = document.execCommand("copy");
     } catch (err) {
-      console.error('Fallback copy failed: ', err);
+      console.error("Fallback copy failed: ", err);
     }
-    
+
     // Remove the temporary textarea
     document.body.removeChild(textArea);
-    
+
     // Show feedback if successful
     if (successful) {
       this.showCopiedFeedback(button);
+    }
+  }
+
+  // Helper to setup the song links after schedule is rendered
+  updateSectionContent(container) {
+    // First update the section container
+    const section = document.getElementById(this.sectionId);
+    if (section) {
+      section.innerHTML = "";
+      section.appendChild(container);
+
+      // Now initialize song links after content is in the DOM
+      console.log("Section content updated, initializing song links");
+      this.initSongLinks();
     }
   }
 }
