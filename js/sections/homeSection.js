@@ -178,7 +178,20 @@ export default class HomeSection {
       section.appendChild(container);
       
       // Ensure the section fills the viewport
-      window.app.adjustSectionHeight(section);
+      if (window.app && typeof window.app.adjustSectionHeight === 'function') {
+        window.app.adjustSectionHeight();
+      } else {
+        // Fallback behavior if the function doesn't exist
+        console.log('adjustSectionHeight function not available, using fallback');
+        
+        // Basic fallback to adjust section heights if needed
+        const sections = document.querySelectorAll('.collapsible-section');
+        sections.forEach(section => {
+          if (section.getAttribute('data-collapsed') === 'false') {
+            section.style.minHeight = `calc(100vh - var(--header-height) - var(--footer-height))`;
+          }
+        });
+      }
     });
   }
   
