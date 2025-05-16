@@ -10,6 +10,10 @@
   <script nomodule src="https://unpkg.com/ionicons@7.2.1/dist/ionicons/ionicons.js"></script>
 </head>
 <body>
+  <button class="mobile-menu-toggle" id="fixed-mobile-toggle" aria-label="Open menu">
+    <ion-icon name="menu-outline"></ion-icon>
+  </button>
+
   <header class="header">
     <div class="logo-wrapper">
       <div class="logo">
@@ -40,9 +44,6 @@
 
   <!-- Mobile menu - just one version -->
   <div class="mobile-nav-menu">
-    <button class="mobile-menu-toggle" aria-label="Open menu">
-      <ion-icon name="menu-outline"></ion-icon>
-    </button>
     <div class="mobile-menu-overlay">
       <div class="mobile-menu-panel">
         <div class="mobile-menu-header">
@@ -63,13 +64,8 @@
     </div>
   </div>
 
-  <!-- Add this button outside the mobile-nav-menu to ensure it's always visible on mobile -->
-  <button class="mobile-menu-toggle" id="fixed-mobile-toggle" aria-label="Open menu">
-    <ion-icon name="menu-outline"></ion-icon>
-  </button>
-
+  <!-- Empty section containers - content will be populated from JS -->
   <main>
-    <!-- Empty section containers - content will be populated from JS -->
     <section id="home-section" class="collapsible-section" data-collapsed="false">
       <!-- Home content will be rendered by HomeSection.js -->
     </section>
