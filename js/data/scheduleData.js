@@ -138,10 +138,17 @@ export const scheduleData = {
       date: new Date(2025, 4, 18), // May 18, 2025
       minister: "Sis Abeena",
       songList: {
-        opening: ["Jesus Keep Me Near The Cross"],
-        praise: ["Jesus Keep Me Near The Cross"],
-        closing: ["Jesus Keep Me Near The Cross"],
-        offering: ["Jesus Keep Me Near The Cross"],
+        opening: ["Great Are You Lord"],
+        praise: [
+          "Jehovah You I Trust In You",
+          "Sing For Joy To God Our Strength",
+        ],
+        closing: [
+          "You Deserve All The Glory Yahweh Yahweh",
+          "You Are Highly Lifted Up",
+          "Hosanna In The Highest",
+        ],
+        offering: ["I Will Enter His Gate With Thanksgiving"],
         hymn: ["Jesus Keep Me Near The Cross"],
       },
       color: ["#000000", "#ffffff"], // Black & White

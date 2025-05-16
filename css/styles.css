@@ -829,6 +829,12 @@ body:not(.menu-open) .collapsible-section:not([data-collapsed="false"]) {
   transform: translateX(0);
 }
 
+/* Ensure mobile menu is properly hidden when inactive */
+.mobile-menu-overlay:not(.active) {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .mobile-menu-header {
   display: flex;
   justify-content: space-between;
@@ -1081,7 +1087,7 @@ body:not(.menu-open) .collapsible-section:not([data-collapsed="false"]) {
 
   /* Fix for song video embeds on mobile devices */
   /* First, fix the modal columns layout issue */
-  .song-modal-columns {
+  .song-modal_columns {
     flex-direction: column;
   }
 
@@ -1139,65 +1145,760 @@ body:not(.menu-open) .collapsible-section:not([data-collapsed="false"]) {
     justify-content: center;
     overflow: hidden;
   }
+
+  /* Improved Mobile Video Embedding */
+  /* Fix inconsistent class name causing video display issues */
+  .song-modal_columns {
+    flex-direction: column;
+  }
+
+  /* Fix height and sizing of video container on mobile */
+  .song-video-column {
+    min-height: 225px;
+    margin-bottom: 10px;
+  }
+
+  /* Ensure modal isn't cut off on small screens */
+  .song-modal-content {
+    max-height: 92vh;
+    width: 92vw;
+  }
+
+  /* Improve scrolling of lyrics on mobile */
+  .song-lyrics-column {
+    max-height: 40vh;
+    overflow-y: auto;
+  }
+
+  /* Make action buttons more tappable on mobile */
+  .song-action-btn {
+    padding: 10px 18px;
+    margin: 5px;
+  }
 }
 
-/* These styles apply to both mobile and desktop but are safe */
-.share-btn.copied {
-  color: white !important;
-  background-color: var(--primary-color) !important;
+/* Enhanced Mobile Experience Styles */
+@media (max-width: 768px) {
+  /* Improved card animations */
+  .schedule-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-left 0.3s ease;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .schedule-card:active {
+    transform: scale(0.98);
+  }
+
+  /* Highlight animation */
+  .schedule-card.row-highlighted {
+    animation: card-pulse 2s infinite alternate ease-in-out;
+    border-left-width: 8px !important;
+    box-shadow: 0 8px 24px rgba(var(--primary-color-rgb, 74, 136, 249), 0.15);
+  }
+
+  @keyframes card-pulse {
+    0% {
+      box-shadow: 0 8px 20px rgba(var(--primary-color-rgb, 74, 136, 249), 0.15);
+    }
+    100% {
+      box-shadow: 0 12px 28px rgba(var(--primary-color-rgb, 74, 136, 249), 0.35);
+    }
+  }
+
+  /* Card expansion animation */
+  .card-content {
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    max-height: 2000px;
+    opacity: 1;
+    overflow: hidden;
+  }
+
+  .card-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  /* Toggle button animation */
+  .toggle-button ion-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .card-content:not(.collapsed) + .toggle-button ion-icon,
+  .toggle-button ion-icon[name="chevron-up-outline"] {
+    transform: rotate(180deg);
+  }
+
+  /* Enhanced card header */
+  .card-header {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(
+      to right,
+      rgba(var(--primary-color-rgb, 74, 136, 249), 0.03),
+      transparent
+    );
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Badge animations */
+  .date-badge {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    height: 60px;
+    margin-right: 14px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .row-highlighted .date-badge {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(var(--primary-color-rgb, 74, 136, 249), 0.2);
+  }
+
+  .date-month {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+  }
+
+  .date-day {
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: #333;
+  }
+
+  /* Improved song items */
+  .song-item {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.05);
+    border-radius: 8px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .song-item:active {
+    transform: scale(0.98);
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
+  }
+
+  /* Enhance song links */
+  .song-link {
+    flex: 1;
+    display: block;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 4px 0;
+  }
+
+  .song-video-link {
+    color: #e62117; /* YouTube red */
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+  }
+
+  .song-video-link:active {
+    transform: scale(1.2);
+  }
+
+  .song-video-link ion-icon {
+    font-size: 1.4rem;
+  }
+
+  /* Enhanced share button */
+  .share-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .share-btn:active {
+    transform: scale(0.9);
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.2);
+  }
+
+  .share-btn.copied {
+    background-color: var(--primary-color);
+    color: white;
+    animation: pulse 0.5s ease;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.15);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Improved color swatches for mobile */
+  .schedule-card .color-swatches {
+    display: flex;
+    gap: 6px;
+    margin: 8px 0;
+  }
+
+  .schedule-card .color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+  }
+
+  .schedule-card .color-swatch:active {
+    transform: scale(1.2);
+  }
+
+  /* Song modal on mobile */
+  @media (max-width: 768px) {
+    .song-modal-content {
+      width: 92vw;
+      height: 85vh;
+      border-radius: 16px;
+    }
+
+    .song-modal.visible .song-modal-content {
+      animation: modal-slide-up 0.4s ease forwards;
+    }
+
+    @keyframes modal-slide-up {
+      from {
+        transform: translateY(10%) scale(0.95);
+        opacity: 0.5;
+      }
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .song-modal-header {
+      background-image: linear-gradient(
+        to right,
+        rgba(var(--primary-color-rgb, 74, 136, 249), 0.05),
+        transparent
+      );
+    }
+
+    .song-modal-close {
+      width: 42px;
+      height: 42px;
+    }
+
+    .song-video-column {
+      margin-bottom: 20px;
+    }
+
+    .song-lyrics-column {
+      max-height: 40vh;
+      overflow-y: auto;
+      padding-bottom: 20px;
+    }
+
+    .song-action-btn {
+      flex: 1;
+      justify-content: center;
+      padding: 12px;
+      border-radius: 8px;
+    }
+  }
 }
 
-.share-btn.copied ion-icon {
-  animation: pulse 0.3s 1;
+/* Touch-friendly scrolling for mobile */
+@media (max-width: 768px) {
+  .song-lyrics-column,
+  .card-content {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Add pull-to-refresh hint */
+  .schedule-cards-container {
+    position: relative;
+    padding-top: 10px;
+  }
+
+  .schedule-cards-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 4px;
+    background-color: #ddd;
+    border-radius: 4px;
+    opacity: 0.7;
+  }
 }
 
-@keyframes pulse {
+/* Ripple effect for mobile interactions */
+.ripple-effect {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  pointer-events: none;
+  width: 100px;
+  height: 100px;
+  transform: scale(0);
+  opacity: 1;
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Add card expand animation */
+@keyframes card-expand {
   0% {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.3);
+    transform: scale(1.02);
   }
   100% {
     transform: scale(1);
   }
 }
 
-/* Song Details Modal Styles */
+/* Enhanced Mobile Toggle Menu Styles */
+/* Add this to your styles.css file */
+
+/* Fixed mobile toggle button enhancements */
+#fixed-mobile-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb, 74, 136, 249), 0.3);
+  border: none;
+  cursor: pointer;
+  z-index: 89;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    background-color 0.3s ease, box-shadow 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#fixed-mobile-toggle:active {
+  transform: scale(0.92);
+}
+
+#fixed-mobile-toggle:hover {
+  background-color: #3a74d5;
+  box-shadow: 0 6px 16px rgba(var(--primary-color-rgb, 74, 136, 249), 0.4);
+}
+
+#fixed-mobile-toggle ion-icon {
+  font-size: 26px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+}
+
+body.menu-open #fixed-mobile-toggle ion-icon {
+  transform: rotate(45deg);
+}
+
+/* Mobile menu overlay improvements */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0);
+  z-index: 90;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.4s ease, opacity 0.4s ease, backdrop-filter 0.4s ease;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  pointer-events: none;
+}
+
+.mobile-menu-overlay.active {
+  visibility: visible;
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  pointer-events: auto;
+}
+
+/* Mobile menu panel animations */
+.mobile-menu-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 85%;
+  max-width: 360px;
+  height: 100%;
+  background-color: white;
+  box-shadow: -2px 0 20px rgba(0, 0, 0, 0.2);
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  display: flex;
+  flex-direction: column;
+  z-index: 91;
+  overflow-y: auto;
+  border-radius: 0 0 0 16px;
+}
+
+.mobile-menu-overlay.active .mobile-menu-panel {
+  transform: translateX(0);
+}
+
+/* Mobile menu header */
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background-image: linear-gradient(
+    to right,
+    rgba(var(--primary-color-rgb, 74, 136, 249), 0.05),
+    transparent
+  );
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.mobile-menu-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+/* Close button animation */
+.mobile-menu-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.mobile-menu-close ion-icon {
+  font-size: 24px;
+  transition: transform 0.3s ease;
+}
+
+.mobile-menu-close:active {
+  transform: scale(0.9);
+  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.2);
+}
+
+.mobile-menu-overlay.active .mobile-menu-close ion-icon {
+  animation: rotateIn 0.4s ease forwards;
+}
+
+@keyframes rotateIn {
+  0% {
+    transform: rotate(-90deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(0);
+    opacity: 1;
+  }
+}
+
+/* Mobile nav links */
+.mobile-nav-links {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobile-nav-links .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-nav-links .nav-link.active {
+  color: var(--primary-color);
+  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.08);
+}
+
+.mobile-nav-links .nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+.mobile-nav-links .nav-link.active::after,
+.mobile-nav-links .nav-link:active::after {
+  width: 30px;
+}
+
+.mobile-nav-links .nav-link:active {
+  transform: scale(0.98);
+  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.12);
+}
+
+.mobile-nav-links .nav-link ion-icon {
+  margin-right: 12px;
+  font-size: 20px;
+  color: var(--primary-color);
+  opacity: 0.85;
+}
+
+.mobile-menu-overlay.active .mobile-nav-links .nav-link {
+  animation: slideInRight 0.5s ease forwards;
+  opacity: 0;
+}
+
+/* Staggered animation for nav links */
+.mobile-menu-overlay.active .mobile-nav-links .nav-link:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.mobile-menu-overlay.active .mobile-nav-links .nav-link:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.mobile-menu-overlay.active .mobile-nav-links .nav-link:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.mobile-menu-overlay.active .mobile-nav-links .nav-link:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.mobile-menu-overlay.active .mobile-nav-links .nav-link:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Mobile search improvements */
+.mobile-search-container {
+  padding: 0 20px 20px;
+}
+
+.mobile-search-box {
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.mobile-search-box:focus-within {
+  background-color: white;
+  border-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.3);
+  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
+}
+
+.mobile-search-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 6px;
+  margin-right: 4px;
+  transition: color 0.3s ease;
+}
+
+.mobile-search-box:focus-within .mobile-search-button {
+  color: var(--primary-color);
+}
+
+#mobile-song-search {
+  flex: 1;
+  border: none;
+  background-color: transparent;
+  outline: none;
+  padding: 8px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.mobile-menu-overlay.active .mobile-search-container {
+  animation: fadeIn 0.5s ease 0.3s forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Add a ripple effect for buttons */
+.ripple {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Improve mobile share button feedback */
+@media (max-width: 768px) {
+  .share-btn {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+    /* Make tappable area larger */
+    position: relative;
+  }
+
+  .share-btn::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+  }
+
+  .share-btn:active {
+    transform: scale(0.9);
+    background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.2);
+  }
+
+  .share-btn.copied {
+    background-color: var(--primary-color);
+    color: white;
+    animation: share-pulse 0.3s ease;
+  }
+
+  @keyframes share-pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+
+/* Add these styles if they're not already in your CSS */
 .song-modal {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
-  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
+  z-index: 1000;
   visibility: hidden;
+  opacity: 0;
   transition: opacity 0.3s ease, visibility 0.3s ease;
-  pointer-events: none; /* This prevents clicks when hidden */
 }
 
 .song-modal.visible {
-  opacity: 1;
   visibility: visible;
-  pointer-events: auto; /* This enables clicks when visible */
+  opacity: 1;
 }
 
 .song-modal-content {
-  width: 85vw;
-  height: 85vh;
   background-color: white;
   border-radius: 10px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  transform: scale(0.95);
+  width: 80%;
+  max-width: 800px;
+  max-height: 90vh;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+  transform: scale(0.9);
   transition: transform 0.3s ease;
 }
 
@@ -1205,96 +1906,38 @@ body:not(.menu-open) .collapsible-section:not([data-collapsed="false"]) {
   transform: scale(1);
 }
 
-.song-modal-close {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-  font-size: 20px;
-  transition: background-color 0.2s ease;
-}
-
-.song-modal-close:hover {
-  background: rgba(0, 0, 0, 0.8);
-}
-
 .song-modal-header {
-  padding: 20px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
   border-bottom: 1px solid #eee;
 }
 
-.song-modal-header h2 {
-  margin: 0 0 10px 0;
+.song-modal-title {
+  margin: 0;
   color: var(--primary-color);
-  font-size: 1.8rem;
-  padding-right: 40px; /* Make room for close button */
+  font-size: 1.3rem;
 }
 
-.song-details-meta {
+.song-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
   display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  color: #555;
-  font-size: 0.95rem;
+  align-items: center;
+  justify-content: center;
 }
 
-.song-content-container {
-  flex: 1;
+.song-modal_columns {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-}
-
-.song-modal-columns {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-.song-lyrics-column,
-.song-video-column {
-  flex: 1;
-  overflow: auto;
   padding: 20px;
 }
 
-.song-lyrics-column {
-  border-right: 1px solid #eee;
-}
-
-.lyrics-container,
-.video-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.lyrics-container h3,
-.video-container h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: var(--secondary-color);
-}
-
-.song-lyrics {
-  flex: 1;
-  overflow: auto;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  font-size: 1rem;
-}
-
-.song-lyrics p {
+.song-video-column {
   margin-bottom: 20px;
 }
 
@@ -1302,9 +1945,8 @@ body:not(.menu-open) .collapsible-section:not([data-collapsed="false"]) {
   position: relative;
   width: 100%;
   height: 0;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  padding-bottom: 56.25%;
   overflow: hidden;
-  border-radius: 8px;
 }
 
 .song-video-embed iframe {
@@ -1313,175 +1955,64 @@ body:not(.menu-open) .collapsible-section:not([data-collapsed="false"]) {
   left: 0;
   width: 100%;
   height: 100%;
-  border-radius: 8px;
 }
 
-.song-modal-footer {
-  padding: 15px 25px;
-  border-top: 1px solid #eee;
-  background-color: #f9f9f9;
+.song-lyrics-column {
+  flex: 1;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.song-details-meta {
+  margin-bottom: 15px;
+}
+
+.song-lyrics pre {
+  white-space: pre-wrap;
+  font-family: inherit;
+  margin: 0;
+  padding: 0;
 }
 
 .song-actions {
   display: flex;
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
   gap: 10px;
 }
 
 .song-action-btn {
-  background-color: #f0f0f0;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 15px;
   display: flex;
   align-items: center;
-  gap: 5px;
-  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 5px;
+  text-decoration: none;
+  color: var(--primary-color);
+  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.1);
   transition: background-color 0.2s ease;
-  font-size: 0.9rem;
 }
 
 .song-action-btn:hover {
-  background-color: #e0e0e0;
+  background-color: rgba(var(--primary-color-rgb, 74, 136, 249), 0.2);
 }
 
 .song-action-btn ion-icon {
-  font-size: 1.2rem;
+  margin-right: 8px;
 }
 
-/* Chord sheet styles */
-.chord-sheet {
-  font-family: monospace;
-  white-space: pre;
-  overflow-x: auto;
-  background-color: #f9f9f9;
-  padding: 15px;
-  border-radius: 5px;
-  line-height: 1.5;
-}
-
-/* Chords toggle */
-.show-chords .chords-section {
-  display: block;
-}
-
-.chords-section {
-  margin-bottom: 20px;
-}
-
-/* Display a message if no lyrics/chords are available */
 .no-lyrics {
-  color: #888;
+  color: #999;
   font-style: italic;
 }
 
-/* Prevent body scrolling when modal is open */
-body.modal-open {
-  overflow: hidden;
-}
-
-/* Responsive adjustments */
+/* For mobile */
 @media (max-width: 768px) {
   .song-modal-content {
-    width: 95vw;
-    height: 90vh;
-  }
-
-  .song-modal_columns {
-    flex-direction: column;
-  }
-
-  .song-lyrics-column,
-  .song-video-column {
-    flex: none;
-    width: 100%;
-    padding: 15px;
-  }
-
-  .song-lyrics-column {
-    border-right: none;
-    border-bottom: 1px solid #eee;
-  }
-
-  .song-video-embed {
-    padding-bottom: 56.25%; /* Maintain aspect ratio */
-  }
-
-  .song-modal-header h2 {
-    font-size: 1.5rem;
-  }
-
-  .song-details-meta {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .song-modal-footer {
-    padding: 10px 15px;
+    width: 95%;
+    max-height: 85vh;
   }
 
   .song-actions {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  /* Fix for song video embeds on mobile devices */
-  /* First, fix the modal columns layout issue */
-  .song-modal-columns {
     flex-direction: column;
-  }
-
-  /* Ensure the song-video-column is properly displayed on mobile */
-  .song-video-column {
-    flex: none;
-    width: 100%;
-    height: auto;
-    min-height: 200px;
-    padding: 15px;
-    display: block;
-  }
-
-  /* Fix video container height on mobile */
-  .video-container {
-    height: auto;
-    margin-bottom: 20px;
-  }
-
-  /* Ensure the video embed has proper dimensions */
-  .song-video-embed {
-    position: relative;
-    width: 100%;
-    height: 0;
-    padding-bottom: 56.25%; /* 16:9 aspect ratio */
-    overflow: hidden;
-    margin-top: 10px;
-  }
-
-  /* Position the iframe properly within its container */
-  .song-video-embed iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
-  }
-
-  /* Fix scrolling issues on mobile */
-  .song-modal-content {
-    overflow-y: auto;
-    max-height: 90vh;
-  }
-
-  /* Ensure lyrics section doesn't push video out of view */
-  .song-lyrics-column {
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  /* Make sure the entire modal is properly sized for mobile */
-  .song-modal.visible {
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
   }
 }

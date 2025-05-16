@@ -88,6 +88,9 @@ class App {
     // Initialize mobile menu functionality
     this.initMobileMenu();
 
+    // Initialize mobile menu animations
+    this.initMobileMenuAnimations();
+
     // Check for shared schedule links
     this.handleSharedLinks();
 
@@ -865,6 +868,216 @@ class App {
     } else {
       console.error(`Section element not found: ${sectionName}-section`);
     }
+  }
+
+  // Add smooth accordion expansion with proper animation
+  setupMobileCardInteractions() {
+    // Capture all cards already rendered
+    const cards = document.querySelectorAll(".schedule-card");
+
+    cards.forEach((card) => {
+      const toggleButton = card.querySelector(".toggle-button");
+      const cardContent = card.querySelector(".card-content");
+      const cardHeader = card.querySelector(".card-header");
+
+      if (toggleButton && cardContent) {
+        // Improved toggle with animation
+        toggleButton.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const icon = toggleButton.querySelector("ion-icon");
+
+          // Toggle collapsed state
+          if (cardContent.classList.contains("collapsed")) {
+            // Expanding - animate properly
+            cardContent.classList.remove("collapsed");
+            cardContent.style.maxHeight = `${cardContent.scrollHeight}px`;
+            icon.setAttribute("name", "chevron-up-outline");
+
+            // Add a nice bounce effect
+            card.style.animation = "card-expand 0.5s ease forwards";
+            setTimeout(() => {
+              card.style.animation = "";
+            }, 500);
+          } else {
+            // Collapsing
+            cardContent.style.maxHeight = "0px";
+            icon.setAttribute("name", "chevron-down-outline");
+
+            // Wait for animation to complete before adding collapsed class
+            setTimeout(() => {
+              cardContent.classList.add("collapsed");
+            }, 300);
+          }
+        });
+
+        // Add ripple effect to card header
+        cardHeader.addEventListener("touchstart", function (e) {
+          const rect = cardHeader.getBoundingClientRect();
+          const x = e.touches[0].clientX - rect.left;
+          const y = e.touches[0].clientY - rect.top;
+
+          const ripple = document.createElement("span");
+          ripple.className = "ripple-effect";
+          ripple.style.left = `${x}px`;
+          ripple.style.top = `${y}px`;
+
+          cardHeader.appendChild(ripple);
+
+          setTimeout(() => {
+            ripple.remove();
+          }, 600);
+        });
+      }
+    });
+
+    // Add pull-to-refresh feeling
+    const cardsContainer = document.querySelector(".schedule-cards-container");
+    let startY, endY;
+
+    cardsContainer.addEventListener(
+      "touchstart",
+      function (e) {
+        startY = e.touches[0].clientY;
+      },
+      { passive: true }
+    );
+
+    cardsContainer.addEventListener("touchmove", function (e) {
+      if (!startY) return;
+
+      endY = e.touches[0].clientY;
+      const diffY = endY - startY;
+
+      // If pulling down at the top of the container
+      if (diffY > 0 && cardsContainer.scrollTop === 0) {
+        // Create a resistance effect - don't move as much as the finger
+        const resistance = 0.3;
+        const translateY = Math.min(diffY * resistance, 60);
+
+        cardsContainer.style.transform = `translateY(${translateY}px)`;
+        e.preventDefault();
+      }
+    });
+
+    cardsContainer.addEventListener("touchend", function () {
+      if (cardsContainer.style.transform) {
+        // Animate back to normal position
+        cardsContainer.style.transition = "transform 0.3s ease";
+        cardsContainer.style.transform = "";
+
+        setTimeout(() => {
+          cardsContainer.style.transition = "";
+        }, 300);
+      }
+
+      startY = null;
+      endY = null;
+    });
+  }
+
+  initMobileMenuAnimations() {
+    console.log("Initializing mobile menu animations...");
+
+    // Add ripple effect to all mobile nav links
+    document.querySelectorAll(".mobile-nav-links .nav-link").forEach((link) => {
+      link.addEventListener("touchstart", function (e) {
+        const rect = link.getBoundingClientRect();
+        const x = e.touches[0].clientX - rect.left;
+        const y = e.touches[0].clientY - rect.top;
+
+        const ripple = document.createElement("span");
+        ripple.className = "ripple";
+        ripple.style.width = "100px";
+        ripple.style.height = "100px";
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+
+        // Add the ripple to the button
+        link.appendChild(ripple);
+
+        // Remove the ripple after animation completes
+        setTimeout(() => {
+          ripple.remove();
+        }, 600);
+      });
+    });
+
+    // Add parallax effect for mobile menu panel
+    const mobileMenuPanel = document.querySelector(".mobile-menu-panel");
+    let startX, currentX;
+
+    document.addEventListener(
+      "touchstart",
+      function (e) {
+        if (!document.body.classList.contains("menu-open")) return;
+
+        startX = e.touches[0].clientX;
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      "touchmove",
+      function (e) {
+        if (!startX || !document.body.classList.contains("menu-open")) return;
+
+        currentX = e.touches[0].clientX;
+        const diffX = currentX - startX;
+
+        // If swiping from right to left (closing menu)
+        if (diffX < 0) {
+          const translateX = Math.max(diffX, -100);
+          mobileMenuPanel.style.transform = `translateX(${translateX}px)`;
+        }
+      },
+      { passive: true }
+    );
+
+    document.addEventListener("touchend", function () {
+      if (
+        !startX ||
+        !currentX ||
+        !document.body.classList.contains("menu-open")
+      )
+        return;
+
+      const diffX = currentX - startX;
+
+      // If swipe was significant enough, close the menu
+      if (diffX < -50) {
+        document.body.classList.remove("menu-open");
+        document
+          .querySelector(".mobile-menu-overlay")
+          .classList.remove("active");
+      } else {
+        // Reset position with animation
+        mobileMenuPanel.style.transition = "transform 0.3s ease";
+        mobileMenuPanel.style.transform = "";
+
+        setTimeout(() => {
+          mobileMenuPanel.style.transition = "";
+        }, 300);
+      }
+
+      startX = null;
+      currentX = null;
+    });
+
+    // Add hover effects for fixed mobile toggle
+    const fixedMobileToggle = document.getElementById("fixed-mobile-toggle");
+    if (fixedMobileToggle) {
+      fixedMobileToggle.addEventListener("mouseenter", () => {
+        fixedMobileToggle.style.transform = "scale(1.05)";
+      });
+
+      fixedMobileToggle.addEventListener("mouseleave", () => {
+        fixedMobileToggle.style.transform = "";
+      });
+    }
+
+    console.log("Mobile menu animations initialized");
   }
 }
 

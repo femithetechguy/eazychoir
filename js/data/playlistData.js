@@ -12,7 +12,7 @@ export const playlistData = {
       difficulty: "Beginner",
       sheetMusicUrl: "resources/sheets/amazing_grace.pdf",
       audioUrl: "resources/audio/amazing_grace.mp3",
-      featured: true
+      featured: true,
     },
     {
       id: 2,
@@ -23,7 +23,7 @@ export const playlistData = {
       difficulty: "Advanced",
       sheetMusicUrl: "resources/sheets/hallelujah_chorus.pdf",
       audioUrl: "resources/audio/hallelujah_chorus.mp3",
-      featured: true
+      featured: true,
     },
     {
       id: 3,
@@ -34,7 +34,7 @@ export const playlistData = {
       difficulty: "Intermediate",
       sheetMusicUrl: "resources/sheets/ave_maria.pdf",
       audioUrl: "resources/audio/ave_maria.mp3",
-      featured: false
-    }
-  ]
+      featured: false,
+    },
+  ],
 };
