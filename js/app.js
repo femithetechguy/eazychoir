@@ -88,6 +88,9 @@ class App {
     // Initialize mobile menu functionality
     this.initMobileMenu();
 
+    // Check for shared schedule links
+    this.handleSharedLinks();
+
     // Log that app is initialized
     console.log("App initialized, active section:", this.activeSection);
   }
@@ -285,36 +288,321 @@ class App {
   }
 
   initSearch() {
-    const searchInput = document.getElementById("song-search");
-    const searchIcon = document.getElementById("search-icon");
-
+    // Desktop search
+    const searchInput = document.getElementById('song-search');
+    const searchIcon = document.getElementById('search-icon');
+    
+    // Mobile search
+    const mobileSearchInput = document.getElementById('mobile-song-search');
+    const mobileSearchButton = document.querySelector('.mobile-search-button');
+    
+    // Common search function for both inputs
+    const performSearch = (searchTerm) => {
+      if (!searchTerm.trim()) return;
+      
+      console.log(`Searching for: ${searchTerm}`);
+      this.globalSearch(searchTerm);
+    };
+    
+    // Setup desktop search
     if (searchInput && searchIcon) {
-      searchIcon.addEventListener("click", () => {
+      // Real-time search as user types (with debounce)
+      let debounceTimer;
+      searchInput.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          const searchTerm = searchInput.value.trim();
+          if (searchTerm && searchTerm.length >= 2) {
+            performSearch(searchTerm);
+          }
+        }, 300); // Debounce delay of 300ms
+      });
+      
+      // Search on click
+      searchIcon.addEventListener('click', () => {
         const searchTerm = searchInput.value.trim();
         if (searchTerm) {
-          this.search(searchTerm);
+          performSearch(searchTerm);
         }
       });
-
-      searchInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
+      
+      // Search on Enter key
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
           const searchTerm = searchInput.value.trim();
           if (searchTerm) {
-            this.search(searchTerm);
+            performSearch(searchTerm);
+          }
+        }
+      });
+    }
+    
+    // Setup mobile search (similar to desktop)
+    if (mobileSearchInput && mobileSearchButton) {
+      // Real-time search as user types (with debounce)
+      let mobileDebounceTimer;
+      mobileSearchInput.addEventListener('input', () => {
+        clearTimeout(mobileDebounceTimer);
+        mobileDebounceTimer = setTimeout(() => {
+          const searchTerm = mobileSearchInput.value.trim();
+          if (searchTerm && searchTerm.length >= 2) {
+            performSearch(searchTerm);
+            
+            // Don't close mobile menu during typing to allow continued searching
+          }
+        }, 300);
+      });
+      
+      // Search on button click
+      mobileSearchButton.addEventListener('click', () => {
+        const searchTerm = mobileSearchInput.value.trim();
+        if (searchTerm) {
+          performSearch(searchTerm);
+          
+          // Close mobile menu after clicking search button
+          document.body.classList.remove('menu-open');
+          const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+          if (mobileMenuOverlay) {
+            mobileMenuOverlay.classList.remove('active');
+          }
+        }
+      });
+      
+      // Search on Enter key
+      mobileSearchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const searchTerm = mobileSearchInput.value.trim();
+          if (searchTerm) {
+            performSearch(searchTerm);
+            
+            // Close mobile menu after pressing Enter
+            document.body.classList.remove('menu-open');
+            const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+            if (mobileMenuOverlay) {
+              mobileMenuOverlay.classList.remove('active');
+            }
           }
         }
       });
     }
   }
 
-  search(term) {
-    console.log(`Searching for: ${term}`);
-    // First load the playlist section
-    this.loadSection("playlist");
-    // Then apply the search filter
+  globalSearch(term) {
+    // Normalize search term - case insensitive search
+    const searchTerm = term.toLowerCase();
+    
+    // Search in all data sources
+    let results = {
+      scheduleResults: this.searchInSchedules(searchTerm),
+      playlistResults: this.searchInPlaylists(searchTerm),
+      requestResults: this.searchInRequests(searchTerm),
+      blogResults: this.searchInBlogs(searchTerm)
+    };
+    
+    // Determine which section has the most relevant results
+    const sectionResults = {
+      schedule: results.scheduleResults.length,
+      playlist: results.playlistResults.length,
+      request: results.requestResults.length,
+      blog: results.blogResults.length
+    };
+    
+    // Find section with most results
+    let targetSection = 'playlist'; // Default to playlist if no results
+    let maxResults = 0;
+    
+    for (const [section, count] of Object.entries(sectionResults)) {
+      if (count > maxResults) {
+        maxResults = count;
+        targetSection = section;
+      }
+    }
+    
+    // If no results found in any section
+    if (maxResults === 0) {
+      // Show a message and stay on current section
+      this.showSearchMessage(`No results found for "${term}"`);
+      return;
+    }
+    
+    // Switch to the section with the most results
+    this.loadSection(targetSection, { 
+      searchResults: results[`${targetSection}Results`],
+      searchTerm: searchTerm
+    });
+    
+    // Show search summary message
+    const totalResults = Object.values(sectionResults).reduce((sum, count) => sum + count, 0);
+    this.showSearchMessage(`Found ${totalResults} results for "${term}"`);
+  }
+
+  searchInSchedules(term) {
+    if (!this.sections.schedule || !this.sections.schedule.data) return [];
+    
+    const results = [];
+    const schedules = this.sections.schedule.data.schedules || [];
+    
+    schedules.forEach(schedule => {
+      // Search in minister name
+      if (schedule.minister.toLowerCase().includes(term)) {
+        results.push({
+          type: 'minister',
+          date: schedule.date,
+          text: schedule.minister,
+          id: `minister-${new Date(schedule.date).toISOString()}`
+        });
+      }
+      
+      // Search in songs
+      for (const [category, songs] of Object.entries(schedule.songList)) {
+        if (Array.isArray(songs)) {
+          songs.forEach(song => {
+            if (song.toLowerCase().includes(term)) {
+              results.push({
+                type: 'song',
+                category: category,
+                date: schedule.date,
+                text: song,
+                id: `${category}-${song.replace(/\s+/g, '-')}-${new Date(schedule.date).toISOString()}`
+              });
+            }
+          });
+        }
+      }
+    });
+    
+    return results;
+  }
+
+  searchInPlaylists(term) {
+    if (!this.sections.playlist || !this.sections.playlist.data) return [];
+    
+    const results = [];
+    const songsData = this.sections.playlist.data.songs || [];
+    
+    songsData.forEach(song => {
+      // Search in title
+      if (song.title.toLowerCase().includes(term)) {
+        results.push({
+          type: 'song',
+          text: song.title,
+          id: `song-${song.id}`,
+          song: song
+        });
+      }
+      
+      // Search in lyrics
+      if (song.lyrics && song.lyrics.toLowerCase().includes(term)) {
+        results.push({
+          type: 'lyrics',
+          text: song.lyrics.substring(0, 50) + '...',
+          id: `lyrics-${song.id}`,
+          song: song
+        });
+      }
+      
+      // Search in author
+      if (song.author && song.author.toLowerCase().includes(term)) {
+        results.push({
+          type: 'author',
+          text: song.author,
+          id: `author-${song.id}`,
+          song: song
+        });
+      }
+    });
+    
+    return results;
+  }
+
+  searchInRequests(term) {
+    if (!this.sections.request || !this.sections.request.data) return [];
+    
+    const results = [];
+    const requests = this.sections.request.data.requests || [];
+    
+    requests.forEach(request => {
+      // Search in song title
+      if (request.songTitle.toLowerCase().includes(term)) {
+        results.push({
+          type: 'request',
+          text: request.songTitle,
+          id: `request-${request.id}`,
+          request: request
+        });
+      }
+      
+      // Search in requester name
+      if (request.requesterName.toLowerCase().includes(term)) {
+        results.push({
+          type: 'requester',
+          text: request.requesterName,
+          id: `requester-${request.id}`,
+          request: request
+        });
+      }
+    });
+    
+    return results;
+  }
+
+  searchInBlogs(term) {
+    if (!this.sections.blog || !this.sections.blog.data) return [];
+    
+    const results = [];
+    const articles = this.sections.blog.data.articles || [];
+    
+    articles.forEach(article => {
+      // Search in title
+      if (article.title.toLowerCase().includes(term)) {
+        results.push({
+          type: 'article',
+          text: article.title,
+          id: `article-${article.id}`,
+          article: article
+        });
+      }
+      
+      // Search in content
+      if (article.content && article.content.toLowerCase().includes(term)) {
+        results.push({
+          type: 'content',
+          text: article.content.substring(0, 50) + '...',
+          id: `content-${article.id}`,
+          article: article
+        });
+      }
+      
+      // Search in author
+      if (article.author && article.author.toLowerCase().includes(term)) {
+        results.push({
+          type: 'blogAuthor',
+          text: article.author,
+          id: `author-${article.id}`,
+          article: article
+        });
+      }
+    });
+    
+    return results;
+  }
+
+  showSearchMessage(message) {
+    // Create or update search message element
+    let messageEl = document.getElementById('search-message');
+    if (!messageEl) {
+      messageEl = document.createElement('div');
+      messageEl.id = 'search-message';
+      document.body.appendChild(messageEl);
+    }
+    
+    messageEl.textContent = message;
+    messageEl.classList.add('active');
+    
+    // Hide message after a delay
     setTimeout(() => {
-      this.sections.playlist.render({ searchTerm: term });
-    }, 100);
+      messageEl.classList.remove('active');
+    }, 3000);
   }
 
   initScrollToTop() {
@@ -395,6 +683,26 @@ class App {
     }
   }
 
+  handleSharedLinks() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const scheduleId = urlParams.get('schedule');
+    
+    if (scheduleId) {
+      // If there's a schedule parameter, navigate to the schedule section
+      this.loadSection('schedule', { 
+        initialLoad: true,
+        highlightSchedule: scheduleId 
+      });
+      
+      // IMPORTANT: Don't clear the URL parameter - keep it for the highlighting to work
+      // Instead, replace the state but keep the query parameter
+      if (window.history.replaceState) {
+        const newUrl = window.location.pathname + window.location.search;
+        window.history.replaceState({ section: 'schedule', scheduleId: scheduleId }, 'Schedule', newUrl);
+      }
+    }
+  }
+
   loadSection(sectionName, options = {}) {
     console.log(`Attempting to load section: ${sectionName}`);
 
@@ -456,7 +764,7 @@ class App {
       }
 
       // Render the section content
-      this.sections[sectionName].render();
+      this.sections[sectionName].render(options);
 
       // Scroll to top
       window.scrollTo(0, 0);

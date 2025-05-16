@@ -1033,49 +1033,227 @@ body:not(.menu-open) .collapsible-section:not([data-collapsed="false"]) {
   padding-left: 16px;
 }
 
-/* Show mobile menu on smaller screens */
-@media (max-width: 768px) {
-  .mobile-menu-toggle {
-    display: flex;
+/* Clickable date styles */
+.clickable-date {
+  cursor: pointer;
+  padding: 4px 8px;
+  display: inline-block;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  font-weight: 500;
+}
+
+.clickable-date:hover {
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+}
+
+/* Highlighted row styles */
+.row-highlighted {
+  position: relative;
+  animation: highlight-row 1.5s infinite alternate ease-in-out;
+  box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.3);
+  z-index: 2;
+}
+
+.row-highlighted td {
+  background-color: rgba(var(--primary-color-rgb), 0.08) !important;
+}
+
+.row-highlighted .clickable-date {
+  background-color: rgba(var(--primary-color-rgb), 0.2);
+  font-weight: bold;
+}
+
+/* Shareable link styles */
+.date-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.share-actions {
+  position: relative;
+}
+
+.share-btn {
+  background: none;
+  border: none;
+  color: var(--secondary-color);
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+  opacity: 0.9;
+  position: relative;
+}
+
+.share-btn:hover {
+  transform: scale(1.1);
+  background-color: rgba(var(--primary-color-rgb), 0.2);
+  color: var(--primary-color);
+  opacity: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.share-btn:active {
+  transform: scale(0.95);
+}
+
+.share-btn ion-icon {
+  font-size: 1.2rem;
+}
+
+/* Add a subtle animation when the table row is hovered */
+tr:hover .share-btn {
+  opacity: 1;
+  animation: pulse 1.5s infinite alternate ease-in-out;
+}
+
+/* Make share button more prominent in highlighted rows */
+.row-highlighted .share-btn {
+  background-color: rgba(var(--primary-color-rgb), 0.3);
+  color: var(--primary-color);
+  opacity: 1;
+}
+
+/* Improve the share link container */
+.share-link-container {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: -10px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  display: flex;
+  min-width: 300px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+.share-link-container::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 15px;
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  transform: rotate(45deg);
+  border-left: 1px solid #ddd;
+  border-top: 1px solid #ddd;
+}
+
+.share-link-container.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.share-link {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px 0 0 4px;
+  font-size: 0.9rem;
+  color: #555;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.copy-link-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  padding: 0 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-link-btn:hover {
+  background-color: var(--primary-color-dark, #3a74d5);
+}
+
+.copy-link-btn ion-icon {
+  font-size: 1.1rem;
+}
+
+/* Add a pulse animation for share button */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.3);
   }
-  
-  .mobile-nav-menu {
-    display: block;
+  70% {
+    box-shadow: 0 0 0 5px rgba(var(--primary-color-rgb), 0);
   }
-  
-  /* Hide main navigation on mobile */
-  .main-nav {
-    display: none;
-  }
-  
-  /* Hide search on mobile */
-  .search-container {
-    display: none;
-  }
-  
-  /* Ensure fixed toggle button always visible */
-  #fixed-mobile-toggle {
-    display: flex;
-  }
-  
-  /* Prevent scrolling when menu is open */
-  body.menu-open {
-    overflow: hidden;
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0);
   }
 }
 
-/* Very small screens adjustments */
-@media (max-width: 480px) {
-  .mobile-menu-panel {
-    width: 85%;
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .date-cell {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
   }
   
-  .mobile-nav-links .nav-link {
-    padding: 14px 16px;
+  .share-btn {
+    padding: 6px;
+    margin-left: 6px;
   }
   
-  .mobile-menu-header h3 {
-    font-size: 1.2rem;
+  .share-btn ion-icon {
+    font-size: 1rem;
+  }
+  
+  .share-link-container {
+    position: fixed;
+    top: auto;
+    bottom: 20px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%) translateY(10px);
+    width: 90%;
+    max-width: 320px;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .share-link-container.visible {
+    transform: translateX(-50%) translateY(0);
+  }
+  
+  .share-link-container::before {
+    display: none;
+  }
+  
+  /* Make the share button more prominent in mobile cards */
+  .schedule-card .share-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: rgba(var(--primary-color-rgb), 0.15);
+    z-index: 5;
+  }
+  
+  .schedule-card.row-highlighted .share-btn {
+    background-color: rgba(var(--primary-color-rgb), 0.3);
   }
 }
 
@@ -1158,12 +1336,72 @@ body:not(.menu-open) .collapsible-section:not([data-collapsed="false"]) {
   font-size: 1.2rem;
 }
 
-@media (max-width: 480px) {
-  .mobile-search-container {
-    padding: 12px;
-  }
-  
-  .mobile-search-container input {
-    padding: 8px 10px;
-  }
+/* Search highlighting styles */
+mark {
+  background-color: rgba(255, 217, 0, 0.4);
+  padding: 0 2px;
+  border-radius: 2px;
+  color: inherit;
+  font-weight: bold;
+}
+
+.search-highlight {
+  animation: highlight-pulse 2s ease-in-out;
+}
+
+tr.search-highlight {
+  background-color: rgba(var(--primary-color-rgb), 0.1) !important;
+}
+
+.schedule-card .card-content:not(.collapsed) mark {
+  background-color: rgba(255, 217, 0, 0.4);
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+/* Search message popup */
+#search-message {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background-color: var(--primary-color);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 4px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  font-weight: 500;
+}
+
+#search-message.active {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+@keyframes highlight-pulse {
+  0% { background-color: rgba(var(--primary-color-rgb), 0.3); }
+  50% { background-color: rgba(var(--primary-color-rgb), 0.1); }
+  100% { background-color: rgba(var(--primary-color-rgb), 0.3); }
+}
+
+/* Date search highlighting */
+.date-highlight {
+  background-color: rgba(var(--primary-color-rgb), 0.15);
+  border-radius: 4px;
+  animation: date-pulse 2s ease-in-out infinite;
+}
+
+.card-header .date-text mark {
+  background-color: rgba(255, 217, 0, 0.6);
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+@keyframes date-pulse {
+  0% { background-color: rgba(var(--primary-color-rgb), 0.15); }
+  50% { background-color: rgba(var(--primary-color-rgb), 0.25); }
+  100% { background-color: rgba(var(--primary-color-rgb), 0.15); }
 }
