@@ -242,7 +242,7 @@ export const scheduleData = {
       minister: "Sis Josephine, Sis Abeena, Dcns Joke, Femi K.",
       songList: {
         opening: [""],
-        praise: ["Praise Medley 1"],
+        praise: ["Praise Medley 1", "Thank You Lord Medley"],
         closing: [""],
         offering: [""],
         hymn: ["N/A"],

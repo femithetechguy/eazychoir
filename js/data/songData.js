@@ -294,10 +294,10 @@ Rest beyond the river.
 `,
     },
     {
-      id: "praise-medley-1",
-      title: "Praise Medley 1",
+      id: "thank-you-lord-medley",
+      title: "Thank You Lord Medley",
       category: ["African Praise"],
-      url: "https://youtu.be/YevObjkKWco",
+      url: "https://youtu.be/gJWL1FgqXFA",
       author: ["Several"],
       key: "",
       lyrics: `
@@ -320,7 +320,17 @@ I just want to thank You Lord
 Thank You Lord
 I just want to thank You Lord
 Thank You Lord
-
+`,
+    },
+    {
+      id: "praise-medley-1",
+      title: "Praise Medley 1",
+      category: ["African Praise"],
+      url: "https://youtu.be/gJWL1FgqXFA",
+      url: "https://youtu.be/YevObjkKWco",
+      author: ["Several"],
+      key: "",
+      lyrics: `
 ALMIGHTY GOD MY REDEEMER
 Almighty God, my Redeemer
 My Hiding Place, my Safe Refuge
