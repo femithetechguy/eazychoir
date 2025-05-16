@@ -237,5 +237,41 @@ export const scheduleData = {
       },
       color: ["#ffb703"], // Yellow
     },
+    {
+      date: new Date(2025, 6, 19), // Jul 19, 2025
+      minister: "Sis Josephine, Sis Abeena, Dcns Joke, Femi K.",
+      songList: {
+        opening: [""],
+        praise: ["Praise Medley 1"],
+        closing: [""],
+        offering: [""],
+        hymn: ["N/A"],
+      },
+      color: ["111111"], // TBD
+    },
+    {
+      date: new Date(2025, 7, 16), // Aug 16, 2025
+      minister: "Sis Josephine, Sis Abeena, Dcns Joke, Femi K.",
+      songList: {
+        opening: [""],
+        praise: [""],
+        closing: [""],
+        offering: [""],
+        hymn: ["N/A"],
+      },
+      color: ["#111111"], // TBD
+    },
+    {
+      date: new Date(2025, 10, 22), // Nov 22, 2025
+      minister: "Sis Josephine, Sis Abeena, Dcns Joke, Femi K.",
+      songList: {
+        opening: [""],
+        praise: [""],
+        closing: [""],
+        offering: [""],
+        hymn: ["N/A"],
+      },
+      color: ["#111111"], // TBD
+    },
   ],
 };

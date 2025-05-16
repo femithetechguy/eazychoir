@@ -140,26 +140,25 @@ class App {
   }
 
   adjustActiveSection() {
-    // Find active section
-    const activeSection = document.querySelector(
-      '.collapsible-section[data-collapsed="false"]'
-    );
-    if (activeSection) {
-      // Calculate viewport height minus header and footer
-      const viewportHeight = window.innerHeight;
-      const headerHeight =
-        document.querySelector(".header")?.offsetHeight || 60;
-      const footerHeight =
-        document.querySelector(".footer")?.offsetHeight || 60;
-      const availableHeight = viewportHeight - headerHeight - footerHeight;
-
-      // Set section height to fill viewport
-      activeSection.style.minHeight = `${availableHeight}px`;
-
-      console.log(
-        `Adjusted section ${activeSection.id} to height: ${availableHeight}px`
-      );
-    }
+    console.log('Adjusting section height');
+    // Get the current section
+    const activeSection = document.querySelector('.section.active');
+    if (!activeSection) return;
+    
+    // Get the viewport height
+    const viewportHeight = window.innerHeight;
+    
+    // Get the header height
+    const header = document.querySelector('.header');
+    const headerHeight = header ? header.offsetHeight : 0;
+    
+    // Calculate the ideal section height (viewport minus header)
+    const idealHeight = viewportHeight - headerHeight;
+    
+    // Set the minimum height for the section
+    activeSection.style.minHeight = `${idealHeight}px`;
+    
+    console.log(`Section ${activeSection.id} height adjusted to ${idealHeight}px`);
   }
 
   initNavigation() {

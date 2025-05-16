@@ -293,5 +293,319 @@ Till my raptur’d soul shall find
 Rest beyond the river.
 `,
     },
+    {
+      id: "praise-medley-1",
+      title: "Praise Medley 1",
+      category: ["African Praise"],
+      url: "https://youtu.be/YevObjkKWco",
+      author: ["Several"],
+      key: "",
+      lyrics: `
+I come before You today
+There's just one thing
+That I want to say
+Thank You Lord thank You Lord
+For all You've given to me
+For all the blessings
+That I cannot see
+Thank You Lord thank You Lord
+
+With a grateful heart
+With a song of praise
+With an outstretched arm
+I will bless Your name
+
+Thank You Lord
+I just want to thank You Lord
+Thank You Lord
+I just want to thank You Lord
+Thank You Lord
+
+ALMIGHTY GOD MY REDEEMER
+Almighty God, my Redeemer
+My Hiding Place, my Safe Refuge
+No other name like Jesus
+No power can stand against You.
+
+My feet are planted on this Rock
+And I will not be shaken
+My hope it comes from You alone
+My Lord and my salvation.
+
+Your praise is al - ways on my lips
+Your word is living in my heart
+And I will praise You with a new song
+My soul will bless You, Lord
+You fill my life with greater joy
+Yes, I delight myself in You
+And I will praise You with a new song
+My soul will bless You, Lord.
+
+I WILL PRAISE FOREVER
+I will praise you forever
+I will praise you forever
+I will praise you forever
+I will praise you forever
+
+CREATOR OF THE UNIVERSE
+Creator of the universe
+What can't you do
+What can't you do
+Jesus
+
+Name above every other name
+What can't you change
+What can't you change
+Jesus
+
+You are able
+Great and mighty God
+You are able, Jesus
+
+You are able
+Great and mighty God
+You are able, Jesus
+
+There is nothing
+Nothing you cannot do
+Nothing you cannot change
+Nothing you cannot turn around
+
+You are able
+Great and mighty God
+I put my trust in you
+You are able Jesus
+You are able Jesus
+You are able Jesus
+
+THIS LIFE THAT I HAVE IS THE LIFE OF CHRIST
+This life that I have
+Is the life of Christ in me
+This life that I have
+Is the life of God
+This joy that I have
+Is the joy of the Holy Ghost
+This life that I have
+Is the life of God
+
+Zoe Zoe
+Zoe Zoe
+Zoe Zoe
+Zoe Zoe
+Zoe Zoe
+Zoe Zoe
+Zoe Zoe
+Zoe Zoe
+
+AMARACHI OBARUBA NEBENA - TBD
+
+PRAISE
+I'll praise in the valley
+Praise on the mountain (yeah)
+I'll praise when I'm sure
+And praise when I'm doubting (yes, sir)
+
+I'll praise when outnumbered
+Praise when surrounded
+'Cause praise is the water
+My enemies drown in
+
+As long as I'm breathing
+I've got a reason to
+
+Praise the Lord
+Oh, my soul (c'mon)
+Praise the Lord
+Oh, my soul (hey)
+
+I won't be quiet, my God is alive
+So how could I keep it inside?
+Praise the Lord
+Oh, my soul
+(Praise the Lord)
+
+Praise the Lord
+Oh, my soul (c'mon)
+Praise the Lord
+Oh, my soul (hey)
+
+Praise the Lord
+Oh, my soul (c'mon)
+Praise the Lord
+Oh, my soul (hey)
+
+Let everything
+That has breath
+Praise the Lord (you got it)
+Praise the Lord
+
+HE HAS DONE GREAT THING
+He has done great thing
+He has done great thing
+He has done great thing
+Bless His Holy name
+
+EZE BUBE
+Eze ebube
+See how far you've brought me
+Eze ebube
+I'm so glad you found me worthy
+I can see
+I can tell
+And I know it's your grace
+All my days I will sing your praise
+
+Eze ebube
+See how far you've brought me
+Eze ebube
+I'm so glad you found me worthy
+I can see
+I can tell
+And I know it's your grace
+All my days I will sing your praise
+
+YOU RAISE ME UP
+You raise me up so I can stand on mountains
+You raise me up to walk on stormy seas
+I am strong when I am on Your shoulders
+You raise me up to more than I can be
+
+WONI KOSAYE LOKE
+Won nì ko saye loke
+O waye fun mì loke
+O gbogo fole mi
+Iyanu loruko re
+
+Won nì ko saye loke
+O waye fun mì loke
+O gbogo fole mi
+Iyanu loruko re
+
+ALAGBARA BI ARA EYA JUDAH (O DE O DE)
+Alagbara bi ara o, eya judah
+Kiniun de, eya Judah
+
+Ode - Ode
+Ode - Ode
+
+Alagbara bi ara o, eya judah
+Kiniun de, eya Judah
+
+YOU ARE YAHWEH
+You are yahweh eh eh
+You are yahweh
+You are yahweh eh eh
+You are yahweh
+
+You are yahweh
+Alpha & Omega
+You are yahweh
+Alpha & Omega
+
+EKUEME
+See what you've done for me
+See how you set me free
+See what you've done for me
+See how you set me free
+
+You are the living God o
+Eze no one like you
+
+Ekueme - Ekueme
+Ekueme - Ekueme
+Ekueme - Ekueme
+
+You are the living God o
+Eze no one like you
+
+Ekueme - Ekueme
+Ekueme - Ekueme
+Ekueme - Ekueme
+
+You are the living God o
+Eze no one like you
+
+ON YOUR MARK, GET SET
+On your mark, get set
+Let us go
+On your mark, get set
+Let us go
+
+Repeat as needed
+
+COME AND SEE O
+Come and see o
+Come and see
+
+Come and see o
+Come and see
+
+Come and see
+What the Lord has done
+Come and see
+What the Lord has done
+
+WHEN YOU SEE ME DANCE I DANCE LIKE A WINNER
+When you see me praise,
+I praise like a winner man
+
+Oh oh oh winner man
+Oh oh oh winner man o
+praise like a winner man
+I praise like a winner man o
+
+When you see me dance,
+I dance like a winner man
+
+Oh oh oh winner man
+Oh oh oh winner man o
+dance like a winner man
+I dance like a winner man o
+
+When you see me sing,
+I sing like a winner man
+
+Oh oh oh winner man
+Oh oh oh winner man o
+sing like a winner man
+I sing like a winner man o
+
+AHH EHH THIS KIND GOD
+Ah eh this kind God
+Another one no dey o
+
+Ah eh this kind God
+Another one no dey o
+
+This kind God
+Another one no dey o
+This kind God
+Another one no dey o
+
+CARRY ME DEY GO
+Carry me dey go
+Jehova carry me dey go dey go dey go
+
+Lift me higher
+Jehova lift me higher higher higher
+
+HALLELUJAH THAT’S WHAT MY SONG WILL BE
+Hallelujah
+That's what my song will be
+That's what my song will be
+That's what my song will be
+`,
+    },
+    {
+      id: "",
+      title: "",
+      category: ["Hymn"],
+      url: "https://youtu.be/",
+      author: [""],
+      key: "",
+      lyrics: `
+  
+`,
+    },
   ],
 };
