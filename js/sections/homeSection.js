@@ -23,6 +23,10 @@ export default class HomeSection {
       const container = document.createElement('div');
       container.className = 'section-container';
       
+      // Content wrapper for proper flex behavior
+      const contentWrapper = document.createElement('div');
+      contentWrapper.className = 'content-fill';
+      
       // Welcome banner
       const welcomeBanner = document.createElement('div');
       welcomeBanner.className = 'welcome-banner';
@@ -30,10 +34,10 @@ export default class HomeSection {
         <h1>${data.title}</h1>
         <p class="subtitle">${data.subtitle}</p>
       `;
-      container.appendChild(welcomeBanner);
+      contentWrapper.appendChild(welcomeBanner);
       
       // Section divider
-      container.appendChild(this.createDivider('home-outline'));
+      contentWrapper.appendChild(this.createDivider('home-outline'));
       
       // About Us
       const homeContent = document.createElement('div');
@@ -42,10 +46,10 @@ export default class HomeSection {
         <h2>${data.aboutUs.title}</h2>
         ${data.aboutUs.paragraphs.map(p => `<p style="font-size: 1.1rem !important;">${p}</p>`).join('')}
       `;
-      container.appendChild(homeContent);
+      contentWrapper.appendChild(homeContent);
       
       // Section divider
-      container.appendChild(this.createDivider('calendar-outline'));
+      contentWrapper.appendChild(this.createDivider('calendar-outline'));
       
       // Upcoming Events
       const schedulePreview = document.createElement('div');
@@ -78,10 +82,10 @@ export default class HomeSection {
         schedulePreview.appendChild(previewItem);
       });
       
-      container.appendChild(schedulePreview);
+      contentWrapper.appendChild(schedulePreview);
       
       // Section divider
-      container.appendChild(this.createDivider('musical-notes-outline'));
+      contentWrapper.appendChild(this.createDivider('musical-notes-outline'));
       
       // Featured Songs
       const playlistPreview = document.createElement('div');
@@ -115,10 +119,10 @@ export default class HomeSection {
       });
       
       playlistPreview.appendChild(songCards);
-      container.appendChild(playlistPreview);
+      contentWrapper.appendChild(playlistPreview);
       
       // Section divider
-      container.appendChild(this.createDivider('chatbubble-ellipses-outline'));
+      contentWrapper.appendChild(this.createDivider('chatbubble-ellipses-outline'));
       
       // Song Requests
       const requestPreview = document.createElement('div');
@@ -134,10 +138,10 @@ export default class HomeSection {
         window.app.loadSection('request');
       });
       
-      container.appendChild(requestPreview);
+      contentWrapper.appendChild(requestPreview);
       
       // Section divider
-      container.appendChild(this.createDivider('book-outline'));
+      contentWrapper.appendChild(this.createDivider('book-outline'));
       
       // Latest Articles
       const blogPreview = document.createElement('div');
@@ -169,8 +173,12 @@ export default class HomeSection {
         blogPreview.appendChild(previewItem);
       });
       
-      container.appendChild(blogPreview);
+      contentWrapper.appendChild(blogPreview);
+      container.appendChild(contentWrapper);
       section.appendChild(container);
+      
+      // Ensure the section fills the viewport
+      window.app.adjustSectionHeight(section);
     });
   }
   
