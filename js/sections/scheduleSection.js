@@ -1,4 +1,5 @@
 import { scheduleData } from "../data/scheduleData.js";
+import { songData } from "../data/songData.js";
 
 export default class ScheduleSection {
   constructor() {
@@ -36,643 +37,698 @@ export default class ScheduleSection {
       `;
       container.appendChild(headerEl);
 
-      // Create schedule table container with horizontal scroll capability for mobile
-      const tableContainer = document.createElement("div");
-      tableContainer.className = "table-container";
-
-      // Create schedule table
-      const table = document.createElement("table");
-      table.className = "schedule-table";
-
-      // Create table header with the revised order
-      const thead = document.createElement("thead");
-      thead.innerHTML = `
-        <tr>
-          <th>Date</th>
-          <th>Minister</th>
-          <th>Opening</th>
-          <th>Praise</th>
-          <th>Closing</th>
-          <th>Offering</th>
-          <th>Hymn</th>
-          <th>Color</th>
-        </tr>
-      `;
-      table.appendChild(thead);
-
-      // Create table body
-      const tbody = document.createElement("tbody");
-
       // Sort schedules by date
       const sortedSchedules = [...data.schedules].sort(
         (a, b) => a.date - b.date
       );
 
-      // Add rows with alternating styles
-      sortedSchedules.forEach((schedule, index) => {
-        const row = document.createElement("tr");
+      // Check if we're on mobile
+      const isMobile = window.innerWidth <= 768;
 
-        // Create a unique ID for this schedule based on date and minister
-        const scheduleId = this.createScheduleId(schedule);
-        row.setAttribute("id", scheduleId);
-
-        // Add alternating class for styling
-        row.className = index % 2 === 0 ? "even-row" : "odd-row";
-
-        // Normalize color to array if it's not already
-        const colors = Array.isArray(schedule.color)
-          ? schedule.color
-          : [schedule.color];
-
-        // Apply row color as a left border gradient if multiple colors, or solid if single color
-        if (colors.length > 1) {
-          row.style.borderLeft = `4px solid`;
-          row.style.borderImage = `linear-gradient(to bottom, ${colors.join(
-            ", "
-          )}) 1`;
-        } else {
-          row.style.borderLeft = `4px solid ${colors[0]}`;
-        }
-
-        // Format date
-        const formattedDate = new Intl.DateTimeFormat("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }).format(schedule.date);
-
-        // Format song lists
-        const openingSongs = this.formatSongList(schedule.songList.opening);
-        const praiseSongs = this.formatSongList(schedule.songList.praise);
-        const closingSongs = this.formatSongList(schedule.songList.closing);
-        const offeringSongs = this.formatSongList(schedule.songList.offering);
-        const hymnSongs = this.formatSongList(schedule.songList.hymn);
-
-        // Create color swatches HTML for display
-        const colorSwatches = this.createColorSwatchesHTML(colors);
-
-        // Create the row HTML with clickable date cell
-        row.innerHTML = `
-          <td data-label="Date" class="date-cell">
-            <div class="clickable-date">${formattedDate}</div>
-            <div class="share-actions">
-              <button class="share-btn" title="Share this schedule">
-                <ion-icon name="share-social-outline"></ion-icon>
-              </button>
-              <div class="share-link-container">
-                <input type="text" class="share-link" value="${window.location.origin}${window.location.pathname}?schedule=${scheduleId}" readonly />
-                <button class="copy-link-btn" title="Copy link">
-                  <ion-icon name="copy-outline"></ion-icon>
-                </button>
-              </div>
-            </div>
-          </td>
-          <td data-label="Minister">${schedule.minister}</td>
-          <td data-label="Opening">${openingSongs}</td>
-          <td data-label="Praise">${praiseSongs}</td>
-          <td data-label="Closing">${closingSongs}</td>
-          <td data-label="Offering">${offeringSongs}</td>
-          <td data-label="Hymn">${hymnSongs}</td>
-          <td data-label="Color">${colorSwatches}</td>
-        `;
-
-        // Add click event to the date cell to highlight the row
-        const dateCell = row.querySelector(".clickable-date");
-        dateCell.addEventListener("click", () => {
-          // Remove highlight from all rows
-          tbody.querySelectorAll("tr").forEach((r) => {
-            r.classList.remove("row-highlighted");
-          });
-
-          // Add highlight to this row
-          row.classList.add("row-highlighted");
-
-          // Scroll to center if needed
-          row.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-        });
-
-        // Add click event to share button
-        const shareBtn = row.querySelector(".share-btn");
-        shareBtn.addEventListener("click", (e) => {
-          e.stopPropagation(); // Prevent row highlight when clicking share
-
-          // Toggle share link container visibility
-          const shareLinkContainer = row.querySelector(".share-link-container");
-          const isVisible = shareLinkContainer.classList.contains("visible");
-
-          // Close all open share containers first
-          document
-            .querySelectorAll(".share-link-container.visible")
-            .forEach((container) => {
-              container.classList.remove("visible");
-            });
-
-          // Toggle this one if it wasn't the one that was open
-          if (!isVisible) {
-            shareLinkContainer.classList.add("visible");
-          }
-        });
-
-        // Add click event to copy button
-        const copyBtn = row.querySelector(".copy-link-btn");
-        copyBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const shareLink = row.querySelector(".share-link");
-          shareLink.select();
-          document.execCommand("copy");
-
-          // Show feedback
-          copyBtn.setAttribute("title", "Copied!");
-          copyBtn
-            .querySelector("ion-icon")
-            .setAttribute("name", "checkmark-outline");
-
-          // Reset after a moment
-          setTimeout(() => {
-            copyBtn.setAttribute("title", "Copy link");
-            copyBtn
-              .querySelector("ion-icon")
-              .setAttribute("name", "copy-outline");
-          }, 2000);
-        });
-
-        // Add the row to the table body
-        tbody.appendChild(row);
-      });
-
-      table.appendChild(tbody);
-      tableContainer.appendChild(table);
-      container.appendChild(tableContainer);
-
-      // Add mobile view for collapsible cards
-      const mobileContainer = document.createElement("div");
-      mobileContainer.className = "mobile-schedule-container";
-
-      // Create mobile cards for each schedule
-      sortedSchedules.forEach((schedule, index) => {
-        const card = document.createElement("div");
-        card.className = "schedule-card";
-
-        // Normalize color to array if it's not already
-        const colors = Array.isArray(schedule.color)
-          ? schedule.color
-          : [schedule.color];
-
-        // Apply card color styles
-        if (colors.length > 1) {
-          card.style.borderLeft = `4px solid`;
-          card.style.borderImage = `linear-gradient(to bottom, ${colors.join(
-            ", "
-          )}) 1`;
-        } else {
-          card.style.borderLeft = `4px solid ${colors[0]}`;
-        }
-
-        // Format date
-        const formattedDate = new Intl.DateTimeFormat("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }).format(schedule.date);
-
-        // Create color display HTML
-        const colorSwatchesHTML = this.createColorSwatchesHTML(colors);
-        const colorNamesString = this.getColorNamesString(colors);
-
-        // Create card header (always visible)
-        const cardHeader = document.createElement("div");
-        cardHeader.className = "card-header";
-        cardHeader.innerHTML = `
-          <div class="card-title">
-            <span class="date-text">${formattedDate}</span>
-            <span class="minister-text">${schedule.minister}</span>
-          </div>
-          <div class="color-display">
-            <div class="color-swatches-container">
-              ${colorSwatchesHTML}
-            </div>
-          </div>
-          <button class="toggle-button" aria-label="Toggle details">
-            <ion-icon name="chevron-down-outline"></ion-icon>
-          </button>
-        `;
-
-        // Create card content (collapsible)
-        const cardContent = document.createElement("div");
-        cardContent.className = "card-content collapsed";
-        cardContent.innerHTML = `
-          <div class="song-section">
-            <div class="song-label">Opening:</div>
-            <div class="song-content">${this.formatSongList(
-              schedule.songList.opening
-            )}</div>
-          </div>
-          <div class="song-section">
-            <div class="song-label">Praise:</div>
-            <div class="song-content">${this.formatSongList(
-              schedule.songList.praise
-            )}</div>
-          </div>
-          <div class="song-section">
-            <div class="song-label">Closing:</div>
-            <div class="song-content">${this.formatSongList(
-              schedule.songList.closing
-            )}</div>
-          </div>
-          <div class="song-section">
-            <div class="song-label">Offering:</div>
-            <div class="song-content">${this.formatSongList(
-              schedule.songList.offering
-            )}</div>
-          </div>
-          <div class="song-section">
-            <div class="song-label">Hymn:</div>
-            <div class="song-content">${this.formatSongList(
-              schedule.songList.hymn
-            )}</div>
-          </div>
-          <div class="song-section">
-            <div class="song-label">Color:</div>
-            <div class="song-content">${colorNamesString}</div>
-          </div>
-        `;
-
-        // Assemble card
-        card.appendChild(cardHeader);
-        card.appendChild(cardContent);
-        mobileContainer.appendChild(card);
-      });
-
-      // Add mobile container to main container
-      container.appendChild(mobileContainer);
-
-      // Add toggle functionality for mobile cards
-      setTimeout(() => {
-        const toggleButtons = container.querySelectorAll(".toggle-button");
-        toggleButtons.forEach((button) => {
-          button.addEventListener("click", (e) => {
-            const card = e.target.closest(".schedule-card");
-            const content = card.querySelector(".card-content");
-            const icon = card.querySelector(".toggle-button ion-icon");
-
-            content.classList.toggle("collapsed");
-
-            if (content.classList.contains("collapsed")) {
-              icon.setAttribute("name", "chevron-down-outline");
-            } else {
-              icon.setAttribute("name", "chevron-up-outline");
-            }
-          });
-        });
-      }, 100);
-
-      // Add download/print button
-      const actionButtons = document.createElement("div");
-      actionButtons.className = "schedule-actions";
-      actionButtons.innerHTML = `
-        <button class="action-button print-button">
-          <ion-icon name="print-outline"></ion-icon> Print Schedule
-        </button>
-        <button class="action-button">
-          <ion-icon name="calendar-outline"></ion-icon> Add to Calendar
-        </button>
-      `;
-      container.appendChild(actionButtons);
-
-      // Add print functionality
-      const printButton = actionButtons.querySelector(".print-button");
-      if (printButton) {
-        printButton.addEventListener("click", () => {
-          window.print();
-        });
-      }
-
-      // Add highlighting functionality for search results
-      if (searchTerm) {
-        // Highlight results in the table
-        const tableRows = document.querySelectorAll(
-          "#schedule-section tbody tr"
-        );
-        tableRows.forEach((row) => {
-          const rowText = row.textContent.toLowerCase();
-          const dateCell = row.querySelector('[data-label="Date"]');
-          const dateText = dateCell ? dateCell.textContent.toLowerCase() : "";
-
-          // Check if search term is in any part of the row OR if it matches date patterns
-          if (
-            rowText.includes(searchTerm.toLowerCase()) ||
-            this.matchesDateSearch(dateText, searchTerm.toLowerCase())
-          ) {
-            row.classList.add("search-highlight");
-
-            // Highlight the specific matching text
-            this.highlightText(row, searchTerm);
-
-            // If it's a date search, specifically highlight the date cell
-            if (this.matchesDateSearch(dateText, searchTerm.toLowerCase())) {
-              dateCell.classList.add("date-highlight");
-            }
-
-            // Expand mobile card if we're on mobile
-            if (window.innerWidth <= 768) {
-              const date = dateCell.textContent;
-              const mobileCards = document.querySelectorAll(".schedule-card");
-
-              mobileCards.forEach((card) => {
-                const cardDate = card.querySelector(".date-text").textContent;
-                if (cardDate === date) {
-                  const content = card.querySelector(".card-content");
-                  const icon = card.querySelector(".toggle-button ion-icon");
-
-                  content.classList.remove("collapsed");
-                  icon.setAttribute("name", "chevron-up-outline");
-
-                  // Highlight the specific matching text
-                  this.highlightText(content, searchTerm);
-
-                  // Highlight date in card header
-                  this.highlightText(
-                    card.querySelector(".card-header"),
-                    searchTerm
-                  );
-
-                  // Scroll to this card
-                  card.scrollIntoView({ behavior: "smooth", block: "center" });
-                }
-              });
-            }
-          }
-        });
+      if (isMobile) {
+        // Mobile view - cards instead of table
+        this.renderMobileView(container, sortedSchedules, searchTerm);
+      } else {
+        // Desktop view - table
+        this.renderDesktopView(container, sortedSchedules, searchTerm);
       }
 
       section.appendChild(container);
 
-      // Check for URL parameter to highlight specific schedule or use passed option
+      // Check for URL parameter to highlight specific schedule
       setTimeout(() => {
-        // First check if we have a scheduleId in the options (from App.loadSection)
-        const scheduleIdFromOptions = options.highlightSchedule;
-        
-        // Then check URL parameters as fallback
         const urlParams = new URLSearchParams(window.location.search);
-        const scheduleIdFromUrl = urlParams.get("schedule");
-        
-        // Use whichever ID is available
-        const scheduleId = scheduleIdFromOptions || scheduleIdFromUrl;
+        const scheduleId = urlParams.get("schedule");
 
         if (scheduleId) {
-          const targetRow = document.getElementById(scheduleId);
-          if (targetRow) {
-            // Remove highlights from all rows first
-            document.querySelectorAll('tr.row-highlighted').forEach(row => {
-              row.classList.remove('row-highlighted');
-            });
-            
-            // Highlight the target row
-            targetRow.classList.add("row-highlighted");
-
-            // Scroll to it with a slight delay to ensure rendering is complete
-            setTimeout(() => {
-              targetRow.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
-              
-              // If on mobile, also expand the corresponding card
-              if (window.innerWidth <= 768) {
-                const dateText = targetRow.querySelector('[data-label="Date"] .clickable-date').textContent;
-                const mobileCards = document.querySelectorAll(".schedule-card");
-                
-                mobileCards.forEach(card => {
-                  const cardDateText = card.querySelector('.date-text').textContent;
-                  if (cardDateText === dateText) {
-                    // Highlight the card
-                    card.classList.add('row-highlighted');
-                    
-                    // Expand the card
-                    const content = card.querySelector('.card-content');
-                    const icon = card.querySelector('.toggle-button ion-icon');
-                    content.classList.remove('collapsed');
-                    icon.setAttribute('name', 'chevron-up-outline');
-                    
-                    // Scroll to the card
-                    card.scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'center'
-                    });
-                  }
-                });
-              }
-            }, 300);
-          }
+          this.highlightSchedule(scheduleId, isMobile);
         }
-      }, 500); // Delay to ensure DOM is ready
+      }, 500);
     });
+
+    // Initialize song link click handlers
+    setTimeout(() => {
+      const songLinks = document.querySelectorAll(".song-link");
+      songLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          const songId = link.getAttribute("data-song-id");
+          this.showSongDetails(songId);
+        });
+      });
+    }, 500);
   }
 
-  // Helper method to format a list of songs
-  formatSongList(songs) {
-    if (!songs || !Array.isArray(songs) || songs.length === 0) {
-      return '<span class="no-song">None</span>';
-    }
+  // Method to render desktop view (table)
+  renderDesktopView(container, sortedSchedules, searchTerm) {
+    // Create schedule table container with horizontal scroll capability
+    const tableContainer = document.createElement("div");
+    tableContainer.className = "table-container";
 
-    return songs.map((song) => `<div class="song-item">${song}</div>`).join("");
-  }
+    // Create schedule table
+    const table = document.createElement("table");
+    table.className = "schedule-table";
 
-  // Helper function to create HTML for color swatches
-  createColorSwatchesHTML(colors) {
-    if (colors.length === 1) {
-      return `<div class="color-swatch" style="background-color: ${colors[0]}"></div>`;
-    } else {
-      // For multiple colors, create multiple swatches
-      return colors
-        .map(
-          (color) =>
-            `<div class="color-swatch" style="background-color: ${color}"></div>`
-        )
-        .join("");
-    }
-  }
+    // Create table header
+    const thead = document.createElement("thead");
+    thead.innerHTML = `
+      <tr>
+        <th>Date</th>
+        <th>Minister</th>
+        <th>Opening</th>
+        <th>Praise</th>
+        <th>Closing</th>
+        <th>Offering</th>
+        <th>Hymn</th>
+        <th>Color</th>
+      </tr>
+    `;
+    table.appendChild(thead);
 
-  // Helper function to get color names as a string
-  getColorNamesString(colors) {
-    const colorNames = colors.map((color) => this.getColorName(color));
+    // Create table body
+    const tbody = document.createElement("tbody");
 
-    if (colorNames.length === 1) {
-      return colorNames[0];
-    } else {
-      // Join with ampersand for two colors, commas and ampersand for more
-      return colorNames.length === 2
-        ? colorNames.join(" & ")
-        : colorNames.slice(0, -1).join(", ") +
-            " & " +
-            colorNames[colorNames.length - 1];
-    }
-  }
+    // Add rows with alternating styles
+    sortedSchedules.forEach((schedule, index) => {
+      const row = document.createElement("tr");
 
-  // Helper function to get color names
-  getColorName(hex) {
-    const colors = {
-      "#4a88f9": "Blue",
-      "#32a852": "Green",
-      "#e63946": "Red",
-      "#ffb703": "Yellow",
-      "#8338ec": "Purple",
-      "#ffffff": "White",
-      "#000000": "Black",
-      "#8B4513": "Brown",
-      "#FFC0CB": "Pink",
-      "#cccccc": "Gray",
-    };
+      // Create a unique ID for this schedule based on date and minister
+      const scheduleId = this.createScheduleId(schedule);
+      row.setAttribute("id", scheduleId);
 
-    return colors[hex.toLowerCase()] || "Custom";
-  }
+      // Add alternating class for styling
+      row.className = index % 2 === 0 ? "even-row" : "odd-row";
 
-  // Add this helper method to highlight text
-  highlightText(element, term) {
-    const nodes = [...element.childNodes];
+      // Normalize color to array if it's not already
+      const colors = Array.isArray(schedule.color)
+        ? schedule.color
+        : [schedule.color];
 
-    nodes.forEach((node) => {
-      // If it's a text node
-      if (node.nodeType === 3) {
-        const text = node.textContent;
-        const lowerText = text.toLowerCase();
-        const lowerTerm = term.toLowerCase();
+      // Apply row color as a left border gradient if multiple colors, or solid if single color
+      if (colors.length > 1) {
+        row.style.borderLeft = `4px solid`;
+        row.style.borderImage = `linear-gradient(to bottom, ${colors.join(
+          ", "
+        )}) 1`;
+      } else {
+        row.style.borderLeft = `4px solid ${colors[0]}`;
+      }
 
-        if (lowerText.includes(lowerTerm)) {
-          const parts = text.split(new RegExp(`(${term})`, "gi"));
-          const fragment = document.createDocumentFragment();
+      // Format date
+      const formattedDate = new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }).format(schedule.date);
 
-          parts.forEach((part) => {
-            if (part.toLowerCase() === lowerTerm) {
-              const mark = document.createElement("mark");
-              mark.textContent = part;
-              fragment.appendChild(mark);
+      // Format song lists
+      const openingSongs = this.formatSongList(schedule.songList.opening);
+      const praiseSongs = this.formatSongList(schedule.songList.praise);
+      const closingSongs = this.formatSongList(schedule.songList.closing);
+      const offeringSongs = this.formatSongList(schedule.songList.offering);
+      const hymnSongs = this.formatSongList(schedule.songList.hymn);
+
+      // Create color swatches HTML for display
+      const colorSwatches = this.createColorSwatchesHTML(colors);
+
+      // Update the row HTML with simplified share button
+      row.innerHTML = `
+        <td data-label="Date" class="date-cell">
+          <div class="clickable-date">${formattedDate}</div>
+          <div class="share-actions">
+            <button class="share-btn" title="Share this schedule" aria-label="Copy schedule link">
+              <ion-icon name="share-social-outline"></ion-icon>
+            </button>
+          </div>
+        </td>
+        <td data-label="Minister">${schedule.minister}</td>
+        <td data-label="Opening">${openingSongs}</td>
+        <td data-label="Praise">${praiseSongs}</td>
+        <td data-label="Closing">${closingSongs}</td>
+        <td data-label="Offering">${offeringSongs}</td>
+        <td data-label="Hymn">${hymnSongs}</td>
+        <td data-label="Color">${colorSwatches}</td>
+      `;
+
+      // Add click event to the date cell to highlight the row
+      setTimeout(() => {
+        const dateCell = row.querySelector(".clickable-date");
+        if (dateCell) {
+          dateCell.addEventListener("click", () => {
+            // Remove highlight from all rows
+            tbody.querySelectorAll("tr").forEach((r) => {
+              r.classList.remove("row-highlighted");
+              r.classList.remove("animate-in");
+            });
+
+            // Add highlight to this row
+            row.classList.add("row-highlighted");
+
+            // Add animation class with a small delay for proper sequencing
+            setTimeout(() => {
+              row.classList.add("animate-in");
+            }, 10);
+
+            // Scroll to center if needed
+            row.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          });
+        }
+
+        // Add click event to share button for direct copying
+        const shareBtn = row.querySelector('.share-btn');
+        if (shareBtn) {
+          shareBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent row highlight when clicking share
+            
+            // Create the shareable link
+            const shareUrl = `${window.location.origin}${window.location.pathname}?schedule=${scheduleId}`;
+            
+            // Use the Clipboard API if available
+            if (navigator.clipboard) {
+              navigator.clipboard.writeText(shareUrl)
+                .then(() => {
+                  this.showCopiedFeedback(shareBtn);
+                })
+                .catch(err => {
+                  console.error('Could not copy text: ', err);
+                  this.fallbackCopy(shareUrl, shareBtn);
+                });
             } else {
-              fragment.appendChild(document.createTextNode(part));
+              this.fallbackCopy(shareUrl, shareBtn);
             }
           });
-
-          const parent = node.parentNode;
-          parent.replaceChild(fragment, node);
         }
-      }
-      // If it's an element node, recursively process its children
-      else if (
-        node.nodeType === 1 &&
-        node.childNodes &&
-        node.childNodes.length > 0
-      ) {
-        this.highlightText(node, term);
-      }
+
+        // Add click event to share link for copying (replacing the copy button)
+        const shareLink = row.querySelector(".share-link");
+        if (shareLink) {
+          shareLink.addEventListener("click", (e) => {
+            e.stopPropagation();
+            shareLink.select();
+            document.execCommand("copy");
+
+            // Show feedback
+            const container = shareLink.closest(".share-link-container");
+            container.classList.add("copied");
+
+            // Reset after a moment
+            setTimeout(() => {
+              container.classList.remove("copied");
+            }, 2000);
+          });
+        }
+      }, 100);
+
+      // Add the row to the table body
+      tbody.appendChild(row);
     });
+
+    table.appendChild(tbody);
+    tableContainer.appendChild(table);
+    container.appendChild(tableContainer);
   }
 
-  // Add this helper method to match date searches
-  matchesDateSearch(dateText, searchTerm) {
-    // Convert both to lowercase for case-insensitive comparison
-    dateText = dateText.toLowerCase();
-    searchTerm = searchTerm.toLowerCase();
+  // Method to render mobile view (cards)
+  renderMobileView(container, sortedSchedules, searchTerm) {
+    // Create a cards container
+    const cardsContainer = document.createElement("div");
+    cardsContainer.className = "schedule-cards-container";
 
-    // Check for direct inclusion first
-    if (dateText.includes(searchTerm)) {
-      return true;
-    }
+    // Add card for each schedule
+    sortedSchedules.forEach((schedule, index) => {
+      // Create a unique ID for this schedule
+      const scheduleId = this.createScheduleId(schedule);
 
-    // Check for month names, full and abbreviated
-    const months = [
-      "january",
-      "jan",
-      "february",
-      "feb",
-      "march",
-      "mar",
-      "april",
-      "apr",
-      "may",
-      "june",
-      "jun",
-      "july",
-      "jul",
-      "august",
-      "aug",
-      "september",
-      "sep",
-      "sept",
-      "october",
-      "oct",
-      "november",
-      "nov",
-      "december",
-      "dec",
-    ];
+      // Format date
+      const formattedDate = new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }).format(schedule.date);
 
-    // Check for day names, full and abbreviated
-    const days = [
-      "sunday",
-      "sun",
-      "monday",
-      "mon",
-      "tuesday",
-      "tue",
-      "tues",
-      "wednesday",
-      "wed",
-      "thursday",
-      "thu",
-      "thur",
-      "thurs",
-      "friday",
-      "fri",
-      "saturday",
-      "sat",
-    ];
-
-    // Check for month matches
-    for (const month of months) {
-      if (searchTerm.includes(month) && dateText.includes(month)) {
-        return true;
-      }
-    }
-
-    // Check for day matches
-    for (const day of days) {
-      if (searchTerm.includes(day) && dateText.includes(day)) {
-        return true;
-      }
-    }
-
-    // Check for year matches (4-digit number)
-    const yearMatch = /\b(20\d{2})\b/.exec(searchTerm);
-    if (yearMatch && dateText.includes(yearMatch[1])) {
-      return true;
-    }
-
-    // Check for day of month (1-31)
-    const dayMatch = /\b([1-9]|[12]\d|3[01])\b/.exec(searchTerm);
-    if (dayMatch) {
-      // Look for the day in the date text, ensuring it's not part of a larger number
-      const dayRegex = new RegExp(
-        `\\b${dayMatch[1]}\\b|\\b${dayMatch[1]}(st|nd|rd|th)\\b`
+      // Format day number and month for visual display
+      const day = schedule.date.getDate();
+      const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(
+        schedule.date
       );
-      if (dayRegex.test(dateText)) {
-        return true;
-      }
-    }
 
-    return false;
+      // Normalize color to array if it's not already
+      const colors = Array.isArray(schedule.color)
+        ? schedule.color
+        : [schedule.color];
+
+      // Create border style
+      let borderStyle = "";
+      if (colors.length > 1) {
+        borderStyle = `border-left: 6px solid; border-image: linear-gradient(to bottom, ${colors.join(
+          ", "
+        )}) 1;`;
+      } else {
+        borderStyle = `border-left: 6px solid ${colors[0]};`;
+      }
+
+      // Create color swatches HTML
+      const colorSwatches = this.createColorSwatchesHTML(colors);
+
+      // Create a card element
+      const card = document.createElement("div");
+      card.className = "schedule-card";
+      card.id = scheduleId + "-card";
+      card.setAttribute("style", borderStyle);
+
+      // Format song lists
+      const openingSongs = this.formatSongList(schedule.songList.opening);
+      const praiseSongs = this.formatSongList(schedule.songList.praise);
+      const closingSongs = this.formatSongList(schedule.songList.closing);
+      const offeringSongs = this.formatSongList(schedule.songList.offering);
+      const hymnSongs = this.formatSongList(schedule.songList.hymn);
+
+      // Create the card content
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="date-badge">
+            <span class="date-month">${month}</span>
+            <span class="date-day">${day}</span>
+          </div>
+          <div class="card-header-info">
+            <div class="date-text">${formattedDate}</div>
+            <div class="minister-name">${schedule.minister}</div>
+          </div>
+          <div class="share-actions">
+            <button class="share-btn" title="Share this schedule" aria-label="Copy schedule link">
+              <ion-icon name="share-social-outline"></ion-icon>
+            </button>
+          </div>
+          <button class="toggle-button" aria-label="Toggle details">
+            <ion-icon name="chevron-down-outline"></ion-icon>
+          </button>
+        </div>
+        <div class="card-content collapsed">
+          <div class="card-content-grid">
+            <div class="song-category">
+              <h4>Opening</h4>
+              ${openingSongs}
+            </div>
+            <div class="song-category">
+              <h4>Praise</h4>
+              ${praiseSongs}
+            </div>
+            <div class="song-category">
+              <h4>Closing</h4>
+              ${closingSongs}
+            </div>
+            <div class="song-category">
+              <h4>Offering</h4>
+              ${offeringSongs}
+            </div>
+            <div class="song-category">
+              <h4>Hymn</h4>
+              ${hymnSongs}
+            </div>
+            <div class="song-category">
+              <h4>Color</h4>
+              ${colorSwatches}
+            </div>
+          </div>
+        </div>
+      `;
+
+      cardsContainer.appendChild(card);
+
+      // Add event listeners (after DOM is ready)
+      setTimeout(() => {
+        // Toggle card expansion on button click
+        const toggleButton = card.querySelector(".toggle-button");
+        const cardContent = card.querySelector(".card-content");
+        const icon = toggleButton.querySelector("ion-icon");
+
+        toggleButton.addEventListener("click", () => {
+          cardContent.classList.toggle("collapsed");
+
+          if (cardContent.classList.contains("collapsed")) {
+            icon.setAttribute("name", "chevron-down-outline");
+          } else {
+            icon.setAttribute("name", "chevron-up-outline");
+          }
+        });
+
+        // Add click event to share button
+        const shareBtn = card.querySelector(".share-btn");
+        if (shareBtn) {
+          shareBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+
+            // Toggle share link container visibility
+            const shareLinkContainer = card.querySelector(
+              ".share-link-container"
+            );
+            const isVisible = shareLinkContainer.classList.contains("visible");
+
+            // Close all open share containers first
+            document
+              .querySelectorAll(".share-link-container.visible")
+              .forEach((container) => {
+                container.classList.remove("visible");
+              });
+
+            // Toggle this one if it wasn't the one that was open
+            if (!isVisible) {
+              shareLinkContainer.classList.add("visible");
+            }
+          });
+        }
+
+        // Add click event to copy button
+        const copyBtn = card.querySelector(".copy-link-btn");
+        if (copyBtn) {
+          copyBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const shareLink = card.querySelector(".share-link");
+            shareLink.select();
+            document.execCommand("copy");
+
+            // Show feedback
+            copyBtn.setAttribute("title", "Copied!");
+            copyBtn
+              .querySelector("ion-icon")
+              .setAttribute("name", "checkmark-outline");
+
+            // Reset after a moment
+            setTimeout(() => {
+              copyBtn.setAttribute("title", "Copy link");
+              copyBtn
+                .querySelector("ion-icon")
+                .setAttribute("name", "copy-outline");
+            }, 2000);
+          });
+        }
+
+        // Make card header clickable to highlight card
+        const cardHeader = card.querySelector(".card-header");
+        cardHeader.addEventListener("click", (e) => {
+          // Don't trigger if clicking share or toggle buttons
+          if (
+            e.target.closest(".share-btn") ||
+            e.target.closest(".toggle-button")
+          ) {
+            return;
+          }
+
+          // Remove highlight from all cards
+          document.querySelectorAll(".schedule-card").forEach((c) => {
+            c.classList.remove("row-highlighted");
+          });
+
+          // Add highlight to this card
+          card.classList.add("row-highlighted");
+        });
+      }, 100);
+    });
+
+    container.appendChild(cardsContainer);
   }
 
-  // Add helper method to create unique ID for schedule
+  // Helper method to highlight a specific schedule by ID
+  highlightSchedule(scheduleId, isMobile) {
+    if (isMobile) {
+      // Mobile - highlight card
+      const card = document.getElementById(scheduleId + "-card");
+      if (card) {
+        // Remove highlight from all cards
+        document.querySelectorAll(".schedule-card").forEach((c) => {
+          c.classList.remove("row-highlighted");
+          c.classList.remove("animate-in");
+        });
+
+        // Add highlight and animation to this card
+        card.classList.add("row-highlighted");
+
+        // Use setTimeout to ensure the animation class is applied after the highlight class
+        setTimeout(() => {
+          card.classList.add("animate-in");
+        }, 10);
+
+        // Expand the card
+        const cardContent = card.querySelector(".card-content");
+        const icon = card.querySelector(".toggle-button ion-icon");
+        cardContent.classList.remove("collapsed");
+        icon.setAttribute("name", "chevron-up-outline");
+
+        // Scroll to the card
+        card.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    } else {
+      // Desktop - highlight row
+      const row = document.getElementById(scheduleId);
+      if (row) {
+        // Remove highlight from all rows
+        document.querySelectorAll("tr.row-highlighted").forEach((r) => {
+          r.classList.remove("row-highlighted");
+          r.classList.remove("animate-in");
+        });
+
+        // Add highlight and animation to this row
+        row.classList.add("row-highlighted");
+
+        // Use setTimeout to ensure the animation class is applied after the highlight class
+        setTimeout(() => {
+          row.classList.add("animate-in");
+        }, 10);
+
+        // Scroll to the row
+        row.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    }
+  }
+
+  // Helper method to create a unique ID for a schedule
   createScheduleId(schedule) {
     const dateStr = new Date(schedule.date).toISOString().split("T")[0];
     const ministerSlug = schedule.minister
       .toLowerCase()
       .replace(/[^a-z0-9]/g, "-");
     return `schedule-${dateStr}-${ministerSlug}`;
+  }
+
+  // Add this method to your ScheduleSection class
+  showSongDetails(songId) {
+    const song = songData.songs.find((s) => s.id === songId);
+    if (!song) return;
+
+    // Check if modal already exists, or create it
+    let modal = document.querySelector(".song-details-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.className = "song-details-modal";
+      document.body.appendChild(modal);
+    }
+
+    // Create modal content
+    modal.innerHTML = `
+      <div class="song-details-content">
+        <button class="song-details-close" aria-label="Close details">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        <h2 class="song-details-title">${song.title}</h2>
+        <div class="song-details-category">
+          ${song.category
+            .map((cat) => `<span class="song-category-tag">${cat}</span>`)
+            .join("")}
+        </div>
+        <p class="song-details-author">By ${song.author.join(", ")}</p>
+        <div class="song-details-lyrics">${song.lyrics}</div>
+        <div class="song-action-buttons">
+          ${
+            song.url
+              ? `<a href="${song.url}" class="song-action-button watch-video-button" target="_blank">
+              <ion-icon name="logo-youtube"></ion-icon> Watch Video
+             </a>`
+              : ""
+          }
+        </div>
+      </div>
+    `;
+
+    // Show modal
+    modal.classList.add("visible");
+
+    // Add close functionality
+    const closeBtn = modal.querySelector(".song-details-close");
+    closeBtn.addEventListener("click", () => {
+      modal.classList.remove("visible");
+    });
+
+    // Close when clicking outside content
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.classList.remove("visible");
+      }
+    });
+  }
+
+  // Fix the formatSongList method which is missing in your current implementation
+
+  formatSongList(songs) {
+    if (!songs || songs.length === 0) {
+      return '<span class="no-songs">None</span>';
+    }
+
+    return songs
+      .map((songTitle) => {
+        // Find the song details from songData
+        const songDetails = this.findSongByTitle(songTitle);
+
+        if (songDetails) {
+          // Create a link with song details
+          return `<div class="song-item">
+          <a href="#" class="song-link" 
+             data-song-id="${songDetails.id}" 
+             data-song-title="${songDetails.title}"
+             title="${songDetails.author.join(", ")}">
+             ${songTitle}
+          </a>
+          ${
+            songDetails.url
+              ? `<a href="${songDetails.url}" class="song-video-link" target="_blank" title="Watch video">
+               <ion-icon name="play-circle-outline"></ion-icon>
+             </a>`
+              : ""
+          }
+        </div>`;
+        } else {
+          // Just show the song title without links if no details found
+          return `<div class="song-item">${songTitle}</div>`;
+        }
+      })
+      .join("");
+  }
+
+  // Add the missing findSongByTitle helper method
+  findSongByTitle(title) {
+    if (!songData || !songData.songs) return null;
+
+    // Case-insensitive search
+    return songData.songs.find(
+      (song) => song.title.toLowerCase() === title.toLowerCase()
+    );
+  }
+
+  // Add the missing createColorSwatchesHTML method
+  createColorSwatchesHTML(colors) {
+    // If no colors, return empty string
+    if (!colors || colors.length === 0) return "";
+
+    // Map each color to a color swatch with tooltip
+    const swatches = colors
+      .map((color) => {
+        const colorName = this.getColorName(color);
+        return `<div class="color-swatch" style="background-color: ${color};" title="${colorName}"></div>`;
+      })
+      .join("");
+
+    // Get combined color names for accessibility and display
+    const colorNames = this.getColorNamesString(colors);
+
+    // Return both the visual swatches and the text description
+    return `
+      <div class="color-swatches">
+        ${swatches}
+      </div>
+      <div class="color-names">${colorNames}</div>
+    `;
+  }
+
+  // Add the missing getColorName method
+  getColorName(hex) {
+    const colorMap = {
+      "#cccccc": "Gray",
+      "#4a88f9": "Blue",
+      "#ffffff": "White",
+      "#e63946": "Red",
+      "#000000": "Black",
+      "#8B4513": "Brown",
+      "#32a852": "Green",
+      "#FFC0CB": "Pink",
+      "#ffb703": "Yellow",
+      // Add any other colors you use
+    };
+
+    return colorMap[hex] || "Unknown";
+  }
+
+  // Add the missing getColorNamesString method
+  getColorNamesString(colors) {
+    if (!colors || colors.length === 0) return "";
+
+    const colorNames = colors.map((color) => this.getColorName(color));
+
+    // If multiple colors, join with commas and "and"
+    if (colorNames.length > 1) {
+      const lastColor = colorNames.pop();
+      return `${colorNames.join(", ")} and ${lastColor}`;
+    }
+
+    return colorNames[0];
+  }
+
+  showCopiedFeedback(button) {
+    // Add copied class for styling
+    button.classList.add('copied');
+    
+    // Change icon to checkmark
+    const icon = button.querySelector('ion-icon');
+    if (icon) {
+      icon.setAttribute('name', 'checkmark-outline');
+    }
+    
+    // Reset after 2 seconds
+    setTimeout(() => {
+      button.classList.remove('copied');
+      if (icon) {
+        icon.setAttribute('name', 'share-social-outline');
+      }
+    }, 2000);
+  }
+
+  fallbackCopy(text, button) {
+    // Create a temporary textarea element
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    
+    // Make it invisible but still on the page
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    
+    // Select and copy
+    textArea.focus();
+    textArea.select();
+    
+    let successful = false;
+    try {
+      successful = document.execCommand('copy');
+    } catch (err) {
+      console.error('Fallback copy failed: ', err);
+    }
+    
+    // Remove the temporary textarea
+    document.body.removeChild(textArea);
+    
+    // Show feedback if successful
+    if (successful) {
+      this.showCopiedFeedback(button);
+    }
   }
 }

@@ -116,10 +116,24 @@ class App {
   handleResize() {
     // Check if we're in mobile view
     const isMobile = window.innerWidth < 768;
+    const wasMobile = document.body.classList.contains("is-mobile");
     document.body.classList.toggle("is-mobile", isMobile);
 
     // Adjust section height for current viewport
     this.adjustActiveSection();
+
+    // If we crossed the mobile/desktop threshold, reload the active section to switch views
+    if (isMobile !== wasMobile && this.activeSection) {
+      // Only reload the schedule section since other sections might not need different views
+      if (this.activeSection === "schedule") {
+        console.log(
+          `View changed to ${
+            isMobile ? "mobile" : "desktop"
+          }, reloading schedule`
+        );
+        this.loadSection(this.activeSection, { skipHistory: true });
+      }
+    }
   }
 
   adjustActiveSection() {
@@ -228,87 +242,147 @@ class App {
   }
 
   initMobileMenu() {
-    // For the fixed mobile toggle button
-    const fixedMobileToggle = document.getElementById("fixed-mobile-toggle");
-    const mobileMenuOverlay = document.querySelector(".mobile-menu-overlay");
+    console.log("Initializing mobile menu...");
 
-    if (fixedMobileToggle && mobileMenuOverlay) {
-      fixedMobileToggle.addEventListener("click", function () {
-        document.body.classList.add("menu-open");
-        mobileMenuOverlay.classList.add("active");
-      });
+    // Get all necessary elements
+    const fixedMobileToggle = document.getElementById("fixed-mobile-toggle");
+    const logoTrigger = document.getElementById("logo-trigger");
+    const mobileMenuClose = document.querySelector(".mobile-menu-close");
+    const mobileMenuOverlay = document.querySelector(".mobile-menu-overlay");
+    const mobileNavLinks = document.querySelectorAll(
+      ".mobile-nav-links .nav-link"
+    );
+
+    // Function to open mobile menu
+    const openMobileMenu = () => {
+      document.body.classList.add("menu-open");
+      document.querySelector(".mobile-menu-overlay").classList.add("active");
+      console.log("Mobile menu opened");
+
+      // Update ARIA attributes
+      if (fixedMobileToggle)
+        fixedMobileToggle.setAttribute("aria-expanded", "true");
+      if (logoTrigger) logoTrigger.setAttribute("aria-expanded", "true");
+    };
+
+    // Function to close mobile menu
+    const closeMobileMenu = () => {
+      document.body.classList.remove("menu-open");
+      if (mobileMenuOverlay) mobileMenuOverlay.classList.remove("active");
+      console.log("Mobile menu closed");
+
+      // Update ARIA attributes
+      if (fixedMobileToggle)
+        fixedMobileToggle.setAttribute("aria-expanded", "false");
+      if (logoTrigger) logoTrigger.setAttribute("aria-expanded", "false");
+    };
+
+    // Add click event to fixed mobile toggle button
+    if (fixedMobileToggle) {
+      fixedMobileToggle.addEventListener("click", openMobileMenu);
+      console.log("Added event listener to fixed mobile toggle");
+    } else {
+      console.warn("Fixed mobile toggle button not found");
     }
 
-    // Get mobile menu elements
-    const mobileMenuToggle = document.querySelector(".mobile-menu-toggle");
-    const mobileMenuClose = document.querySelector(".mobile-menu-close");
+    // Add click event to logo trigger button
+    if (logoTrigger) {
+      logoTrigger.addEventListener("click", openMobileMenu);
+      console.log("Added event listener to logo trigger");
+    } else {
+      console.warn("Logo trigger button not found");
+    }
 
-    if (mobileMenuToggle && mobileMenuClose && mobileMenuOverlay) {
-      // Open mobile menu
-      mobileMenuToggle.addEventListener("click", function () {
-        console.log("Opening mobile menu");
-        document.body.classList.add("menu-open");
-        mobileMenuOverlay.classList.add("active");
-      });
+    // Add click event to close button
+    if (mobileMenuClose) {
+      mobileMenuClose.addEventListener("click", closeMobileMenu);
+      console.log("Added event listener to close button");
+    } else {
+      console.warn("Mobile menu close button not found");
+    }
 
-      // Close mobile menu
-      mobileMenuClose.addEventListener("click", function () {
-        console.log("Closing mobile menu");
-        document.body.classList.remove("menu-open");
-        mobileMenuOverlay.classList.remove("active");
-      });
-
-      // Close when clicking on overlay
-      mobileMenuOverlay.addEventListener("click", function (e) {
+    // Close menu when clicking overlay
+    if (mobileMenuOverlay) {
+      mobileMenuOverlay.addEventListener("click", (e) => {
         if (e.target === mobileMenuOverlay) {
-          document.body.classList.remove("menu-open");
-          mobileMenuOverlay.classList.remove("active");
+          closeMobileMenu();
         }
       });
+      console.log("Added event listener to menu overlay");
+    } else {
+      console.warn("Mobile menu overlay not found");
+    }
 
-      // Setup mobile navigation links
-      const mobileNavLinks = document.querySelectorAll(
-        ".mobile-nav-links .nav-link"
-      );
-      mobileNavLinks.forEach((link) => {
-        link.addEventListener("click", (e) => {
-          e.preventDefault();
-          const section = link.getAttribute("data-section");
-          console.log("Mobile nav click:", section);
+    // Add click events to each nav link
+    mobileNavLinks.forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const section = link.getAttribute("data-section");
 
-          // Load the section
+        // Close the menu
+        closeMobileMenu();
+
+        // Navigate to the section
+        if (section && this.loadSection) {
           this.loadSection(section);
-
-          // Close the mobile menu
-          document.body.classList.remove("menu-open");
-          mobileMenuOverlay.classList.remove("active");
-        });
+          console.log(`Navigated to ${section}`);
+        }
       });
+    });
+
+    // Add keyboard accessibility - close on escape
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && document.body.classList.contains("menu-open")) {
+        closeMobileMenu();
+      }
+    });
+
+    // Check if we're on mobile and init specific behaviors
+    this.checkMobileView();
+    window.addEventListener("resize", () => this.checkMobileView());
+
+    console.log("Mobile menu initialization complete");
+  }
+
+  checkMobileView() {
+    const isMobile = window.innerWidth <= 768;
+    document.body.classList.toggle("is-mobile", isMobile);
+
+    const fixedMobileToggle = document.getElementById("fixed-mobile-toggle");
+    const logoTrigger = document.getElementById("logo-trigger");
+
+    // Make sure toggle buttons are visible on mobile only
+    if (fixedMobileToggle) {
+      fixedMobileToggle.style.display = isMobile ? "flex" : "none";
+    }
+
+    if (logoTrigger) {
+      logoTrigger.style.display = isMobile ? "flex" : "none";
     }
   }
 
   initSearch() {
     // Desktop search
-    const searchInput = document.getElementById('song-search');
-    const searchIcon = document.getElementById('search-icon');
-    
+    const searchInput = document.getElementById("song-search");
+    const searchIcon = document.getElementById("search-icon");
+
     // Mobile search
-    const mobileSearchInput = document.getElementById('mobile-song-search');
-    const mobileSearchButton = document.querySelector('.mobile-search-button');
-    
+    const mobileSearchInput = document.getElementById("mobile-song-search");
+    const mobileSearchButton = document.querySelector(".mobile-search-button");
+
     // Common search function for both inputs
     const performSearch = (searchTerm) => {
       if (!searchTerm.trim()) return;
-      
+
       console.log(`Searching for: ${searchTerm}`);
       this.globalSearch(searchTerm);
     };
-    
+
     // Setup desktop search
     if (searchInput && searchIcon) {
       // Real-time search as user types (with debounce)
       let debounceTimer;
-      searchInput.addEventListener('input', () => {
+      searchInput.addEventListener("input", () => {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
           const searchTerm = searchInput.value.trim();
@@ -317,18 +391,18 @@ class App {
           }
         }, 300); // Debounce delay of 300ms
       });
-      
+
       // Search on click
-      searchIcon.addEventListener('click', () => {
+      searchIcon.addEventListener("click", () => {
         const searchTerm = searchInput.value.trim();
         if (searchTerm) {
           performSearch(searchTerm);
         }
       });
-      
+
       // Search on Enter key
-      searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+      searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
           const searchTerm = searchInput.value.trim();
           if (searchTerm) {
             performSearch(searchTerm);
@@ -336,50 +410,54 @@ class App {
         }
       });
     }
-    
+
     // Setup mobile search (similar to desktop)
     if (mobileSearchInput && mobileSearchButton) {
       // Real-time search as user types (with debounce)
       let mobileDebounceTimer;
-      mobileSearchInput.addEventListener('input', () => {
+      mobileSearchInput.addEventListener("input", () => {
         clearTimeout(mobileDebounceTimer);
         mobileDebounceTimer = setTimeout(() => {
           const searchTerm = mobileSearchInput.value.trim();
           if (searchTerm && searchTerm.length >= 2) {
             performSearch(searchTerm);
-            
+
             // Don't close mobile menu during typing to allow continued searching
           }
         }, 300);
       });
-      
+
       // Search on button click
-      mobileSearchButton.addEventListener('click', () => {
+      mobileSearchButton.addEventListener("click", () => {
         const searchTerm = mobileSearchInput.value.trim();
         if (searchTerm) {
           performSearch(searchTerm);
-          
+
           // Close mobile menu after clicking search button
-          document.body.classList.remove('menu-open');
-          const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+          document.body.classList.remove("menu-open");
+          const mobileMenuOverlay = document.querySelector(
+            ".mobile-menu-overlay"
+          );
           if (mobileMenuOverlay) {
-            mobileMenuOverlay.classList.remove('active');
+            mobileMenuOverlay.classList.remove("active");
           }
         }
       });
-      
+
       // Search on Enter key
-      mobileSearchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+      mobileSearchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
           const searchTerm = mobileSearchInput.value.trim();
           if (searchTerm) {
             performSearch(searchTerm);
-            
+
             // Close mobile menu after pressing Enter
-            document.body.classList.remove('menu-open');
-            const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+            document.body.classList.remove("menu-open");
+            const mobileMenuOverlay = document.querySelector(
+              ".mobile-menu-overlay"
+            );
             if (mobileMenuOverlay) {
-              mobileMenuOverlay.classList.remove('active');
+              mobileMenuOverlay.classList.remove("active");
             }
           }
         }
@@ -390,218 +468,223 @@ class App {
   globalSearch(term) {
     // Normalize search term - case insensitive search
     const searchTerm = term.toLowerCase();
-    
+
     // Search in all data sources
     let results = {
       scheduleResults: this.searchInSchedules(searchTerm),
       playlistResults: this.searchInPlaylists(searchTerm),
       requestResults: this.searchInRequests(searchTerm),
-      blogResults: this.searchInBlogs(searchTerm)
+      blogResults: this.searchInBlogs(searchTerm),
     };
-    
+
     // Determine which section has the most relevant results
     const sectionResults = {
       schedule: results.scheduleResults.length,
       playlist: results.playlistResults.length,
       request: results.requestResults.length,
-      blog: results.blogResults.length
+      blog: results.blogResults.length,
     };
-    
+
     // Find section with most results
-    let targetSection = 'playlist'; // Default to playlist if no results
+    let targetSection = "playlist"; // Default to playlist if no results
     let maxResults = 0;
-    
+
     for (const [section, count] of Object.entries(sectionResults)) {
       if (count > maxResults) {
         maxResults = count;
         targetSection = section;
       }
     }
-    
+
     // If no results found in any section
     if (maxResults === 0) {
       // Show a message and stay on current section
       this.showSearchMessage(`No results found for "${term}"`);
       return;
     }
-    
+
     // Switch to the section with the most results
-    this.loadSection(targetSection, { 
+    this.loadSection(targetSection, {
       searchResults: results[`${targetSection}Results`],
-      searchTerm: searchTerm
+      searchTerm: searchTerm,
     });
-    
+
     // Show search summary message
-    const totalResults = Object.values(sectionResults).reduce((sum, count) => sum + count, 0);
+    const totalResults = Object.values(sectionResults).reduce(
+      (sum, count) => sum + count,
+      0
+    );
     this.showSearchMessage(`Found ${totalResults} results for "${term}"`);
   }
 
   searchInSchedules(term) {
     if (!this.sections.schedule || !this.sections.schedule.data) return [];
-    
+
     const results = [];
     const schedules = this.sections.schedule.data.schedules || [];
-    
-    schedules.forEach(schedule => {
+
+    schedules.forEach((schedule) => {
       // Search in minister name
       if (schedule.minister.toLowerCase().includes(term)) {
         results.push({
-          type: 'minister',
+          type: "minister",
           date: schedule.date,
           text: schedule.minister,
-          id: `minister-${new Date(schedule.date).toISOString()}`
+          id: `minister-${new Date(schedule.date).toISOString()}`,
         });
       }
-      
+
       // Search in songs
       for (const [category, songs] of Object.entries(schedule.songList)) {
         if (Array.isArray(songs)) {
-          songs.forEach(song => {
+          songs.forEach((song) => {
             if (song.toLowerCase().includes(term)) {
               results.push({
-                type: 'song',
+                type: "song",
                 category: category,
                 date: schedule.date,
                 text: song,
-                id: `${category}-${song.replace(/\s+/g, '-')}-${new Date(schedule.date).toISOString()}`
+                id: `${category}-${song.replace(/\s+/g, "-")}-${new Date(
+                  schedule.date
+                ).toISOString()}`,
               });
             }
           });
         }
       }
     });
-    
+
     return results;
   }
 
   searchInPlaylists(term) {
     if (!this.sections.playlist || !this.sections.playlist.data) return [];
-    
+
     const results = [];
     const songsData = this.sections.playlist.data.songs || [];
-    
-    songsData.forEach(song => {
+
+    songsData.forEach((song) => {
       // Search in title
       if (song.title.toLowerCase().includes(term)) {
         results.push({
-          type: 'song',
+          type: "song",
           text: song.title,
           id: `song-${song.id}`,
-          song: song
+          song: song,
         });
       }
-      
+
       // Search in lyrics
       if (song.lyrics && song.lyrics.toLowerCase().includes(term)) {
         results.push({
-          type: 'lyrics',
-          text: song.lyrics.substring(0, 50) + '...',
+          type: "lyrics",
+          text: song.lyrics.substring(0, 50) + "...",
           id: `lyrics-${song.id}`,
-          song: song
+          song: song,
         });
       }
-      
+
       // Search in author
       if (song.author && song.author.toLowerCase().includes(term)) {
         results.push({
-          type: 'author',
+          type: "author",
           text: song.author,
           id: `author-${song.id}`,
-          song: song
+          song: song,
         });
       }
     });
-    
+
     return results;
   }
 
   searchInRequests(term) {
     if (!this.sections.request || !this.sections.request.data) return [];
-    
+
     const results = [];
     const requests = this.sections.request.data.requests || [];
-    
-    requests.forEach(request => {
+
+    requests.forEach((request) => {
       // Search in song title
       if (request.songTitle.toLowerCase().includes(term)) {
         results.push({
-          type: 'request',
+          type: "request",
           text: request.songTitle,
           id: `request-${request.id}`,
-          request: request
+          request: request,
         });
       }
-      
+
       // Search in requester name
       if (request.requesterName.toLowerCase().includes(term)) {
         results.push({
-          type: 'requester',
+          type: "requester",
           text: request.requesterName,
           id: `requester-${request.id}`,
-          request: request
+          request: request,
         });
       }
     });
-    
+
     return results;
   }
 
   searchInBlogs(term) {
     if (!this.sections.blog || !this.sections.blog.data) return [];
-    
+
     const results = [];
     const articles = this.sections.blog.data.articles || [];
-    
-    articles.forEach(article => {
+
+    articles.forEach((article) => {
       // Search in title
       if (article.title.toLowerCase().includes(term)) {
         results.push({
-          type: 'article',
+          type: "article",
           text: article.title,
           id: `article-${article.id}`,
-          article: article
+          article: article,
         });
       }
-      
+
       // Search in content
       if (article.content && article.content.toLowerCase().includes(term)) {
         results.push({
-          type: 'content',
-          text: article.content.substring(0, 50) + '...',
+          type: "content",
+          text: article.content.substring(0, 50) + "...",
           id: `content-${article.id}`,
-          article: article
+          article: article,
         });
       }
-      
+
       // Search in author
       if (article.author && article.author.toLowerCase().includes(term)) {
         results.push({
-          type: 'blogAuthor',
+          type: "blogAuthor",
           text: article.author,
           id: `author-${article.id}`,
-          article: article
+          article: article,
         });
       }
     });
-    
+
     return results;
   }
 
   showSearchMessage(message) {
     // Create or update search message element
-    let messageEl = document.getElementById('search-message');
+    let messageEl = document.getElementById("search-message");
     if (!messageEl) {
-      messageEl = document.createElement('div');
-      messageEl.id = 'search-message';
+      messageEl = document.createElement("div");
+      messageEl.id = "search-message";
       document.body.appendChild(messageEl);
     }
-    
+
     messageEl.textContent = message;
-    messageEl.classList.add('active');
-    
+    messageEl.classList.add("active");
+
     // Hide message after a delay
     setTimeout(() => {
-      messageEl.classList.remove('active');
+      messageEl.classList.remove("active");
     }, 3000);
   }
 
@@ -685,20 +768,24 @@ class App {
 
   handleSharedLinks() {
     const urlParams = new URLSearchParams(window.location.search);
-    const scheduleId = urlParams.get('schedule');
-    
+    const scheduleId = urlParams.get("schedule");
+
     if (scheduleId) {
       // If there's a schedule parameter, navigate to the schedule section
-      this.loadSection('schedule', { 
+      this.loadSection("schedule", {
         initialLoad: true,
-        highlightSchedule: scheduleId 
+        highlightSchedule: scheduleId,
       });
-      
+
       // IMPORTANT: Don't clear the URL parameter - keep it for the highlighting to work
       // Instead, replace the state but keep the query parameter
       if (window.history.replaceState) {
         const newUrl = window.location.pathname + window.location.search;
-        window.history.replaceState({ section: 'schedule', scheduleId: scheduleId }, 'Schedule', newUrl);
+        window.history.replaceState(
+          { section: "schedule", scheduleId: scheduleId },
+          "Schedule",
+          newUrl
+        );
       }
     }
   }

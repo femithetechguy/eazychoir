@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EazyChoir SPA</title>
+    <title>EazyChoir</title>
     <link rel="stylesheet" href="css/styles.css" />
     <script type="module" src="js/app.js" defer></script>
     <script
@@ -16,10 +16,12 @@
     ></script>
   </head>
   <body>
+    <!-- Mobile toggle button - fixed position -->
     <button
       class="mobile-menu-toggle"
       id="fixed-mobile-toggle"
       aria-label="Open menu"
+      aria-expanded="false"
     >
       <ion-icon name="menu-outline"></ion-icon>
     </button>
@@ -30,18 +32,19 @@
           <ion-icon name="musical-notes-outline"></ion-icon>
           <span id="site-title">EazyChoir</span>
         </div>
+        <!-- Logo trigger button for mobile -->
         <button
           class="mobile-menu-toggle"
           id="logo-trigger"
-          aria-label="Toggle menu"
+          aria-label="Open menu"
+          aria-expanded="false"
         >
           <ion-icon name="menu-outline"></ion-icon>
         </button>
       </div>
+
+      <!-- Desktop navigation -->
       <nav class="main-nav" id="main-nav">
-        <button class="menu-close" id="menu-close" aria-label="Close menu">
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
         <div class="nav-links">
           <button class="nav-btn active" data-section="home">
             <ion-icon name="home-outline"></ion-icon> HOME
@@ -60,13 +63,15 @@
           </button>
         </div>
       </nav>
+
+      <!-- Search for desktop -->
       <div class="search-container">
         <input type="text" id="song-search" placeholder="Search EazyChoir" />
         <ion-icon name="search-outline" id="search-icon"></ion-icon>
       </div>
     </header>
 
-    <!-- Mobile menu - just one version -->
+    <!-- Mobile menu - separate from desktop navigation -->
     <div class="mobile-nav-menu">
       <div class="mobile-menu-overlay">
         <div class="mobile-menu-panel">
@@ -77,7 +82,7 @@
             </button>
           </div>
 
-          <!-- Add mobile search box here -->
+          <!-- Mobile search box -->
           <div class="mobile-search-container">
             <input
               type="text"
@@ -89,23 +94,13 @@
             </button>
           </div>
 
+          <!-- Mobile navigation links -->
           <nav class="mobile-nav-links">
-            <!-- Use the same sections as in the main navigation -->
-            <a href="#home-section" class="nav-link" data-section="home"
-              >HOME</a
-            >
-            <a href="#schedule-section" class="nav-link" data-section="schedule"
-              >SCHEDULE</a
-            >
-            <a href="#playlist-section" class="nav-link" data-section="playlist"
-              >PLAYLIST</a
-            >
-            <a href="#request-section" class="nav-link" data-section="request"
-              >REQUEST</a
-            >
-            <a href="#blog-section" class="nav-link" data-section="blog"
-              >BLOG</a
-            >
+            <a class="nav-link" data-section="home">HOME</a>
+            <a class="nav-link" data-section="schedule">SCHEDULE</a>
+            <a class="nav-link" data-section="playlist">PLAYLIST</a>
+            <a class="nav-link" data-section="request">REQUEST</a>
+            <a class="nav-link" data-section="blog">BLOG</a>
           </nav>
         </div>
       </div>
